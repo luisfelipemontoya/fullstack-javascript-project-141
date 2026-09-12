@@ -7,6 +7,8 @@ En la práctica aprenderás sobre diseño de bases de datos, PaaS, monitoreo de 
 Proyecto de aprendizaje de Códica: https://app.codica.la/programs/fullstack-javascript
 Así debería funcionar: https://files.hexlet.app/a/s44d43
 
+## Demo
+[Ver aplicación en vivo](https://fullstack-javascript-project-141-093s.onrender.com)
 
 ## Stack
 
