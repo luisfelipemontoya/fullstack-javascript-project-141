@@ -13,7 +13,7 @@
     "lint": "biome ci .",
     "lint:fix": "biome check --write .",
     "build": "webpack",
-    "start": "fastify start server/plugin.js -l debug -P -o"
+    "start": "knex migrate:latest && fastify start server/plugin.js -l debug -P -o"
   },
   "jest": {
     "modulePathIgnorePatterns": [
