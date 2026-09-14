@@ -14,7 +14,7 @@ import fastifySensible from '@fastify/sensible';
 import { plugin as fastifyReverseRoutes } from 'fastify-reverse-routes';
 import fastifyObjectionjs from 'fastify-objectionjs';
 import qs from 'qs';
-import { Eta } from 'eta';
+import pug from 'pug';
 import i18next from 'i18next';
 
 import ru from './locales/ru.js';
@@ -34,11 +34,10 @@ const mode = process.env.NODE_ENV || 'development';
 
 const setUpViews = (app) => {
   const helpers = getHelpers(app);
-  const eta = new Eta();
 
   app.register(fastifyView, {
     engine: {
-      eta,
+      pug,
     },
     defaultContext: {
       ...helpers,
