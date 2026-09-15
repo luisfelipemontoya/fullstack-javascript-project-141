@@ -47,9 +47,11 @@ export default {
       },
       welcome: {
         index: {
-          hello: 'Hello from Hexlet!',
-          description: 'Online programming school',
-          more: 'Learn more',
+          hello: 'Manage your tasks with ease',
+          description: 'Create, organize, and track your tasks in one place.',
+          imageAlt: 'Task manager',
+          signUp: 'Get started',
+          signIn: 'Log in',
         },
       },
     },
