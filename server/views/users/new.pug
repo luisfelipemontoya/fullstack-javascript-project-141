@@ -1,0 +1,10 @@
+extends ../layouts/application
+
+include ../mixins/input
+include ../mixins/submit
+
+block content
+  form(action=route('users'), method="post")
+    +input(user, 'email', errors, 'text')
+    +input(user, 'password', errors, 'password')
+    +submit(t('views.users.new.submit'))

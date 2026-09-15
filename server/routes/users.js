@@ -11,7 +11,9 @@ export default (app) => {
     })
     .get('/users/new', { name: 'newUser' }, (_req, reply) => {
       const user = new app.objection.models.user();
-      reply.render('users/new', { user });
+      const header = i18next.t('views.users.new.signUp');
+
+      reply.render('users/new', { user, header });
     })
     .post('/users', async (req, reply) => {
       const user = new app.objection.models.user();
@@ -24,7 +26,14 @@ export default (app) => {
         reply.redirect(app.reverse('root'));
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.users.create.error'));
-        reply.render('users/new', { user, errors: data });
+
+        const header = i18next.t('views.users.new.signUp');
+
+        reply.render('users/new', {
+          user,
+          errors: data,
+          header,
+        });
       }
 
       return reply;
