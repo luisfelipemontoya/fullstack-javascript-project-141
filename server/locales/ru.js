@@ -27,6 +27,7 @@ export default {
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
+        footer: 'Менеджер задач',
       },
     },
     views: {
