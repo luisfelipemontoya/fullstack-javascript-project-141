@@ -6,7 +6,9 @@ export default (app) => {
   app
     .get('/session/new', { name: 'newSession' }, (_req, reply) => {
       const signInForm = {};
-      reply.render('session/new', { signInForm });
+      const header = i18next.t('views.session.new.signIn');
+
+      reply.render('session/new', { signInForm, header });
     })
     .post(
       '/session',
@@ -20,12 +22,20 @@ export default (app) => {
           const errors = {
             email: [{ message: i18next.t('flash.session.create.error') }],
           };
-          reply.render('session/new', { signInForm, errors });
+          const header = i18next.t('views.session.new.signIn');
+
+          reply.render('session/new', {
+            signInForm,
+            errors,
+            header,
+          });
+
           return reply;
         }
         await req.logIn(user);
         req.flash('success', i18next.t('flash.session.create.success'));
         reply.redirect(app.reverse('root'));
+
         return reply;
       }),
     )

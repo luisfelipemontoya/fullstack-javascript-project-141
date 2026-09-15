@@ -1,0 +1,16 @@
+mixin input(entity, propertyName, errors, type = 'text')
+  - const propertyErrors = _.get(errors || {}, propertyName)
+  - const hasError = !_.isEmpty(propertyErrors)
+  - const inputId = `data_${propertyName}`
+
+  .mb-3
+    label(for=inputId)= propertyName
+    input.form-control(
+      class=hasError ? 'is-invalid' : ''
+      id=inputId
+      name=`data[${propertyName}]`
+      type=type
+      value=_.get(entity, propertyName, '')
+    )
+    if hasError
+      .invalid-feedback= propertyErrors.map(({ message }) => message).join('. ')

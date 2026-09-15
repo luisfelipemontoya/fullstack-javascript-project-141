@@ -1,0 +1,10 @@
+extends ../layouts/application
+
+include ../mixins/input
+include ../mixins/submit
+
+block content
+  form(action=route('session'), method="post")
+    +input(signInForm, 'email', errors, 'text')
+    +input(signInForm, 'password', {}, 'password')
+    +submit(t('views.session.new.submit'))
