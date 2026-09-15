@@ -1,5 +1,4 @@
 # Gestor de tareas
-
 [![hexlet-check](https://github.com/luisfelipemontoya/fullstack-javascript-project-141/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/luisfelipemontoya/fullstack-javascript-project-141/actions)
 
 En la práctica aprenderás sobre diseño de bases de datos, PaaS, monitoreo de errores, Vite, PostCSS, ORM, el framework Fastify, plantillas y Bootstrap.
