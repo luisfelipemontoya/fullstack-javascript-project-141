@@ -5,6 +5,8 @@ include ../mixins/submit
 
 block content
   form(action=route('users'), method="post")
+    +input(user, 'firstName', errors, 'text')
+    +input(user, 'lastName', errors, 'text')
     +input(user, 'email', errors, 'text')
     +input(user, 'password', errors, 'password')
     +submit(t('views.users.new.submit'))
