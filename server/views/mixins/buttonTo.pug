@@ -1,0 +1,4 @@
+mixin buttonTo(action, method, className, value)
+  form(action=action, method="post")
+    input(name="_method", type="hidden", value=method)
+    input(class=className, type="submit", value=value)

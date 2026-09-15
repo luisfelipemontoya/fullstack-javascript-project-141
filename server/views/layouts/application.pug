@@ -1,3 +1,5 @@
+include ../mixins/buttonTo
+
 doctype html
 html(lang="en")
   head
@@ -22,8 +24,13 @@ html(lang="en")
 
           ul.navbar-nav
             if isAuthenticated()
-              li.nav-item
-                //- Temporalmente: migramos buttonTo después
+              li.nav-item      
+                +buttonTo(
+                  route('session'),
+                  'DELETE',
+                  'nav-link border-0 bg-transparent',
+                  t('layouts.application.signOut')
+                )
             else
               li.nav-item
                 a.nav-link(href=route('newSession'))= t('layouts.application.signIn')
