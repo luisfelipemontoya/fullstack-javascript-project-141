@@ -45,6 +45,8 @@ export default {
           submit: 'Register',
           signUp: 'Register',
         },
+        edit: 'Edit user',
+        submit: 'Save',
       },
       welcome: {
         index: {

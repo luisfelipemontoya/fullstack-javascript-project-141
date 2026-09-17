@@ -1,0 +1,13 @@
+extends ../layouts/application
+
+include ../mixins/input
+include ../mixins/submit
+
+block content
+  form(action=`/users/${user.id}`, method="post")
+    input(type="hidden", name="_method", value="PATCH")
+    +input(user, 'firstName', errors, 'text')
+    +input(user, 'lastName', errors, 'text')
+    +input(user, 'email', errors, 'text')
+    +input(user, 'password', errors, 'password')
+    +submit(t('views.users.edit.submit'))

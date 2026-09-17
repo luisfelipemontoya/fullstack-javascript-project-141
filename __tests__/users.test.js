@@ -13,6 +13,22 @@ describe('test users CRUD', () => {
   let models;
   const testData = getTestData();
 
+  const signIn = async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: app.reverse('session'),
+      payload: {
+        data: testData.users.existing,
+      },
+    });
+
+    const [sessionCookie] = response.cookies;
+
+    return {
+      [sessionCookie.name]: sessionCookie.value,
+    };
+  };
+
   beforeAll(async () => {
     app = fastify({
       exposeHeadRoutes: false,
@@ -67,6 +83,36 @@ describe('test users CRUD', () => {
     };
     const user = await models.user.query().findOne({ email: params.email });
     expect(user).toMatchObject(expected);
+  });
+
+  it('edit', async () => {
+    const user = await models.user.query().findOne({ email: testData.users.existing.email });
+
+    const cookie = await signIn();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `/users/${user.id}/edit`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('cannot edit another user', async () => {
+    const currentUser = await models.user.query().findOne({ email: testData.users.existing.email });
+
+    const anotherUser = await models.user.query().whereNot('id', currentUser.id).first();
+
+    const cookie = await signIn();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `/users/${anotherUser.id}/edit`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
   });
 
   afterEach(async () => {
