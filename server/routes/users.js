@@ -27,6 +27,37 @@ export default (app) => {
       reply.render('users/edit', { user, header });
       return reply;
     })
+    .patch('/users/:id', { name: 'user' }, async (req, reply) => {
+      if (!req.isAuthenticated() || req.user.id !== Number(req.params.id)) {
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const user = await app.objection.models.user.query().findById(req.params.id);
+
+      try {
+        const validUser = await app.objection.models.user.fromJson(req.body.data);
+
+        await user.$query().patch(validUser);
+
+        req.flash('info', i18next.t('flash.users.update.success'));
+        reply.redirect(app.reverse('users'));
+      } catch ({ data }) {
+        req.flash('error', i18next.t('flash.users.update.error'));
+
+        const header = i18next.t('views.users.edit.edit');
+
+        user.$set(req.body.data);
+
+        reply.render('users/edit', {
+          user,
+          errors: data,
+          header,
+        });
+      }
+
+      return reply;
+    })
     .post('/users', async (req, reply) => {
       const user = new app.objection.models.user();
       user.$set(req.body.data);

@@ -52,6 +52,10 @@ export default {
           action: 'Update',
           submit: 'Save',
         },
+        update: {
+          success: 'User updated successfully',
+          error: 'Failed to update user',
+        },
       },
       welcome: {
         index: {

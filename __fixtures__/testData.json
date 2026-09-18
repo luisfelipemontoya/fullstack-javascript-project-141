@@ -9,6 +9,12 @@
     "existing": {
       "email": "lawrence.kulas87@outlook.com",
       "password": "O6AvLIQL1cbzrre"
+    },
+    "updated": {
+      "firstName": "Lawrence Updated",
+      "lastName": "Kulas Updated",
+      "email": "lawrence.updated@outlook.com",
+      "password": "NewPassword123"
     }
   }
 }

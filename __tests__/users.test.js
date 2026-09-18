@@ -115,6 +115,35 @@ describe('test users CRUD', () => {
     expect(response.statusCode).toBe(302);
   });
 
+  it('update', async () => {
+    const user = await models.user.query().findOne({
+      email: testData.users.existing.email,
+    });
+
+    const cookie = await signIn();
+    const params = testData.users.updated;
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/users/${user.id}`,
+      cookies: cookie,
+      payload: {
+        data: params,
+      },
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const updatedUser = await models.user.query().findById(user.id);
+
+    const expected = {
+      ..._.omit(params, 'password'),
+      passwordDigest: encrypt(params.password),
+    };
+
+    expect(updatedUser).toMatchObject(expected);
+  });
+
   afterEach(async () => {
     // Пока Segmentation fault: 11
     // после каждого теста откатываем миграции

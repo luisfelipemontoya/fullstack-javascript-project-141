@@ -51,6 +51,10 @@ export default {
           action: 'Обновлять',
           submit: 'Сохранять',
         },
+        update: {
+          success: 'Пользователь успешно обновлен',
+          error: 'Не удалось обновить пользователя',
+        },
       },
       welcome: {
         index: {
