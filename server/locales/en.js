@@ -26,6 +26,12 @@ export default {
           action: 'Delete',
           success: 'User deleted successfully',
         },
+        statuses: {
+          create: {
+            success: 'Status created successfully',
+            error: 'Failed to create status',
+          },
+        },
       },
       authError: 'Access denied! Please login',
     },
@@ -35,6 +41,7 @@ export default {
         signIn: 'Login',
         signUp: 'Register',
         signOut: 'Logout',
+        statuses: 'Statuses',
         footer: 'Task Manager',
       },
     },
@@ -62,6 +69,16 @@ export default {
         },
         delete: {
           action: 'Delete',
+        },
+      },
+      statuses: {
+        id: 'ID',
+        name: 'Name',
+        createdAt: 'Created at',
+        new: {
+          header: 'Create status',
+          action: 'Create status',
+          submit: 'Create',
         },
       },
       welcome: {

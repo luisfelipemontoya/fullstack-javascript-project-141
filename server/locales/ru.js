@@ -26,6 +26,12 @@ export default {
           action: 'Удалить',
           success: 'Пользователь успешно удален',
         },
+        statuses: {
+          create: {
+            success: 'Статус успешно создан',
+            error: 'Не удалось создать статус',
+          },
+        },
       },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
@@ -35,6 +41,7 @@ export default {
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
+        statuses: 'Statuses',
         footer: 'Менеджер задач',
       },
     },
@@ -61,6 +68,16 @@ export default {
         },
         delete: {
           action: 'Удалить',
+        },
+      },
+      statuses: {
+        id: 'ИДЕНТИФИКАТОР',
+        name: 'Имя',
+        createdAt: 'Создано',
+        new: {
+          header: 'Создать статус',
+          action: 'Создать статус',
+          submit: 'Создавать',
         },
       },
       welcome: {

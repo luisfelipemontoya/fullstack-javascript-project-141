@@ -46,6 +46,7 @@ describe('test users CRUD', () => {
   });
 
   beforeEach(async () => {
+    await knex('task_statuses').del();
     await knex('users').del();
     await prepareData(app);
   });

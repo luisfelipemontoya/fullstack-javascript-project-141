@@ -1,0 +1,59 @@
+// @ts-check
+
+import i18next from 'i18next';
+
+export default (app) => {
+  app
+    .get('/statuses', { name: 'statuses' }, async (_req, reply) => {
+      const statuses = await app.objection.models.taskStatus.query();
+
+      reply.render('taskStatuses/index', { statuses });
+      return reply;
+    })
+
+    .get('/statuses/new', { name: 'newStatus' }, (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const status = new app.objection.models.taskStatus();
+      const header = i18next.t('views.statuses.new.header');
+
+      reply.render('taskStatuses/new', { status, header });
+      return reply;
+    })
+
+    .post('/statuses', async (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const status = new app.objection.models.taskStatus();
+      status.$set(req.body.data);
+
+      try {
+        const validStatus = app.objection.models.taskStatus.fromJson(req.body.data);
+
+        await app.objection.models.taskStatus.query().insert(validStatus);
+
+        req.flash('info', i18next.t('flash.statuses.create.success'));
+        reply.redirect(app.reverse('statuses'));
+      } catch ({ data }) {
+        req.flash('error', i18next.t('flash.statuses.create.error'));
+
+        const header = i18next.t('views.statuses.new.header');
+
+        reply.render('taskStatuses/new', {
+          status,
+          errors: data,
+          header,
+        });
+      }
+
+      return reply;
+    });
+};

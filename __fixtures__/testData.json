@@ -16,5 +16,10 @@
       "email": "lawrence.updated@outlook.com",
       "password": "NewPassword123"
     }
+  },
+  "taskStatuses": {
+    "new": {
+      "name": "review"
+    }
   }
 }

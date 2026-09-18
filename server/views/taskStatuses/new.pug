@@ -1,0 +1,9 @@
+extends ../layouts/application
+
+include ../mixins/input
+include ../mixins/submit
+
+block content
+  form(action=route('statuses'), method="post")
+    +input(status, 'name', errors, 'text')
+    +submit(t('views.statuses.new.submit'))
