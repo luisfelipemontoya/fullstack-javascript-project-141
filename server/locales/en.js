@@ -6,8 +6,8 @@ export default {
     flash: {
       session: {
         create: {
-          success: 'You are logged in',
           error: 'Wrong email or password',
+          success: 'You are logged in',
         },
         delete: {
           success: 'You are logged out',
@@ -17,6 +17,14 @@ export default {
         create: {
           error: 'Failed to register',
           success: 'User registered successfully',
+        },
+        update: {
+          success: 'User updated successfully',
+          error: 'Failed to update user',
+        },
+        delete: {
+          action: 'Delete',
+          success: 'User deleted successfully',
         },
       },
       authError: 'Access denied! Please login',
@@ -52,13 +60,8 @@ export default {
           action: 'Update',
           submit: 'Save',
         },
-        update: {
-          success: 'User updated successfully',
-          error: 'Failed to update user',
-        },
         delete: {
           action: 'Delete',
-          success: 'User deleted successfully',
         },
       },
       welcome: {

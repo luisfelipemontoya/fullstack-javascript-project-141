@@ -38,10 +38,12 @@ html(lang="en")
                 a.nav-link(href=route('newUser'))= t('layouts.application.signUp')
 
     .container.wrapper.flex-grow-1
-      if reply.flash()
-        each messages, type in reply.flash()
-          each message in messages
-            .alert(class=`alert-${getAlertClass(type)}`, role="alert")= message
+      - const flashMessages = reply.flash()
+
+        if flashMessages
+          each messages, type in flashMessages
+            each message in messages
+              .alert(class=`alert-${getAlertClass(type)}`, role="alert")= message
 
       h1.my-4= header || ''
 
