@@ -43,10 +43,12 @@ describe('test users CRUD', () => {
     // перед каждым тестом выполняем миграции
     // и заполняем БД тестовыми данными
     await knex.migrate.latest();
-    await prepareData(app);
   });
 
-  beforeEach(async () => {});
+  beforeEach(async () => {
+    await knex('users').del();
+    await prepareData(app);
+  });
 
   it('index', async () => {
     const response = await app.inject({
@@ -142,6 +144,48 @@ describe('test users CRUD', () => {
     };
 
     expect(updatedUser).toMatchObject(expected);
+  });
+
+  it('delete', async () => {
+    const user = await models.user.query().findOne({
+      email: testData.users.existing.email,
+    });
+
+    const cookie = await signIn();
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/users/${user.id}`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const deletedUser = await models.user.query().findById(user.id);
+
+    expect(deletedUser).toBeUndefined();
+  });
+
+  it('cannot delete another user', async () => {
+    const currentUser = await models.user.query().findOne({
+      email: testData.users.existing.email,
+    });
+
+    const anotherUser = await models.user.query().whereNot('id', currentUser.id).first();
+
+    const cookie = await signIn();
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/users/${anotherUser.id}`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const existingUser = await models.user.query().findById(anotherUser.id);
+
+    expect(existingUser).toBeDefined();
   });
 
   afterEach(async () => {

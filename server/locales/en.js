@@ -56,6 +56,10 @@ export default {
           success: 'User updated successfully',
           error: 'Failed to update user',
         },
+        delete: {
+          action: 'Delete',
+          success: 'User deleted successfully',
+        },
       },
       welcome: {
         index: {

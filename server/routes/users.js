@@ -55,9 +55,25 @@ export default (app) => {
           header,
         });
       }
-
       return reply;
     })
+    .delete('/users/:id', { name: 'deleteUser' }, async (req, reply) => {
+      if (!req.isAuthenticated() || req.user.id !== Number(req.params.id)) {
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const user = await app.objection.models.user.query().findById(req.params.id);
+
+      await user.$query().delete();
+
+      req.logOut();
+      req.flash('info', i18next.t('flash.users.delete.success'));
+
+      reply.redirect(app.reverse('root'));
+      return reply;
+    })
+
     .post('/users', async (req, reply) => {
       const user = new app.objection.models.user();
       user.$set(req.body.data);

@@ -1,5 +1,7 @@
 extends ../layouts/application
 
+include ../mixins/buttonTo
+
 block content
   table.table.table-striped
     thead
@@ -18,6 +20,14 @@ block content
           td= formatDate(user.createdAt)
           td
             if isAuthenticated() && reply.request.user.id === user.id
-              a.btn.btn-primary(
-                href=route('editUser', { id: String(user.id) })
-              )= t('views.users.edit.action')
+              .d-flex
+                a.btn.btn-primary(
+                  href=route('editUser', { id: String(user.id) })
+                )= t('views.users.edit.action')
+
+                +buttonTo(
+                  route('deleteUser', { id: String(user.id) }),
+                  'DELETE',
+                  'btn btn-danger',
+                  t('views.users.delete.action')
+                )
