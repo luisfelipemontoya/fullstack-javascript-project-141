@@ -39,14 +39,19 @@ export default {
       },
       users: {
         id: 'ID',
+        fullName: 'Full name',
+        actions: 'Actions',
         email: 'Email',
         createdAt: 'Created at',
         new: {
           submit: 'Register',
           signUp: 'Register',
         },
-        edit: 'Edit user',
-        submit: 'Save',
+        edit: {
+          edit: 'Edit user',
+          action: 'Update',
+          submit: 'Save',
+        },
       },
       welcome: {
         index: {
