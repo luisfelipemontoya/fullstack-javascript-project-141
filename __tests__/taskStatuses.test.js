@@ -90,6 +90,52 @@ describe('test task statuses CRUD', () => {
     expect(status).toMatchObject(params);
   });
 
+  it('edit', async () => {
+    const cookie = await signIn();
+    const status = await models.taskStatus.query().first();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('editStatus', { id: status.id }),
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('cannot edit when unauthenticated', async () => {
+    const status = await models.taskStatus.query().first();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('editStatus', { id: status.id }),
+    });
+
+    expect(response.statusCode).toBe(302);
+  });
+
+  it('update', async () => {
+    const cookie = await signIn();
+    const status = await models.taskStatus.query().first();
+
+    const params = testData.taskStatuses.updated;
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: app.reverse('status', { id: status.id }),
+      cookies: cookie,
+      payload: {
+        data: params,
+      },
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const updatedStatus = await models.taskStatus.query().findById(status.id);
+
+    expect(updatedStatus).toMatchObject(params);
+  });
+
   afterAll(async () => {
     await app.close();
   });

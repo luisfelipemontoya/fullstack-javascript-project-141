@@ -10,9 +10,13 @@ block content
         th= t('views.statuses.id')
         th= t('views.statuses.name')
         th= t('views.statuses.createdAt')
+        th= t('views.statuses.actions')
     tbody
       each status in statuses
         tr
           td= status.id
           td= status.name
           td= formatDate(status.createdAt)
+          td
+            if isAuthenticated()
+              a.btn.btn-primary(href=route('editStatus', { id: status.id }))= t('views.statuses.edit.action')

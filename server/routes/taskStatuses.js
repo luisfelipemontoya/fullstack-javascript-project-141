@@ -25,6 +25,55 @@ export default (app) => {
       return reply;
     })
 
+    .get('/statuses/:id/edit', { name: 'editStatus' }, async (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const status = await app.objection.models.taskStatus.query().findById(req.params.id);
+
+      const header = i18next.t('views.statuses.edit.header');
+
+      reply.render('taskStatuses/edit', { status, header });
+
+      return reply;
+    })
+
+    .patch('/statuses/:id', { name: 'status' }, async (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const status = await app.objection.models.taskStatus.query().findById(req.params.id);
+
+      try {
+        const validStatus = app.objection.models.taskStatus.fromJson(req.body.data);
+
+        await status.$query().patch(validStatus);
+
+        req.flash('info', i18next.t('flash.statuses.update.success'));
+        reply.redirect(app.reverse('statuses'));
+      } catch ({ data }) {
+        req.flash('error', i18next.t('flash.statuses.update.error'));
+
+        status.$set(req.body.data);
+
+        const header = i18next.t('views.statuses.edit.header');
+
+        reply.render('taskStatuses/edit', {
+          status,
+          errors: data,
+          header,
+        });
+      }
+
+      return reply;
+    })
+
     .post('/statuses', async (req, reply) => {
       if (!req.isAuthenticated()) {
         req.flash('error', i18next.t('flash.authError'));

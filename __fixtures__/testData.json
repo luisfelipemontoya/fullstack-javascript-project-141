@@ -20,6 +20,9 @@
   "taskStatuses": {
     "new": {
       "name": "review"
+    },
+    "updated": {
+      "name": "ready for review"
     }
   }
 }

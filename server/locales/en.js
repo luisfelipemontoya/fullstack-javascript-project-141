@@ -31,6 +31,10 @@ export default {
             success: 'Status created successfully',
             error: 'Failed to create status',
           },
+          update: {
+            success: 'Status updated successfully',
+            error: 'Failed to update status',
+          },
         },
       },
       authError: 'Access denied! Please login',
@@ -79,6 +83,12 @@ export default {
           header: 'Create status',
           action: 'Create status',
           submit: 'Create',
+        },
+        actions: 'Actions',
+        edit: {
+          header: 'Edit status',
+          action: 'Edit',
+          submit: 'Save',
         },
       },
       welcome: {
