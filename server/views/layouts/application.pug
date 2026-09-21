@@ -23,6 +23,9 @@ html(lang="en")
                 a.nav-link(href=route('users'))= t('layouts.application.users')
 
           ul.navbar-nav
+            li.nav-item
+              a.nav-link(href=route('statuses'))= t('layouts.application.statuses')
+          
             if isAuthenticated()
               li.nav-item      
                 +buttonTo(
@@ -31,9 +34,7 @@ html(lang="en")
                   'nav-link border-0 bg-transparent',
                   t('layouts.application.signOut')
                 )
-            else
-              li.nav-item
-                a.nav-link(href=route('statuses'))= t('layouts.application.statuses')
+            else              
               li.nav-item
                 a.nav-link(href=route('newSession'))= t('layouts.application.signIn')
               li.nav-item
@@ -42,10 +43,10 @@ html(lang="en")
     .container.wrapper.flex-grow-1
       - const flashMessages = reply.flash()
 
-        if flashMessages
-          each messages, type in flashMessages
-            each message in messages
-              .alert(class=`alert-${getAlertClass(type)}`, role="alert")= message
+      if flashMessages
+        each messages, type in flashMessages
+          each message in messages
+            .alert(class=`alert-${getAlertClass(type)}`, role="alert")= message
 
       h1.my-4= header || ''
 

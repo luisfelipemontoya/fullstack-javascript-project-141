@@ -23,23 +23,23 @@ export default {
           error: 'Failed to update user',
         },
         delete: {
-          action: 'Delete',
           success: 'User deleted successfully',
         },
-        statuses: {
-          create: {
-            success: 'Status created successfully',
-            error: 'Failed to create status',
-          },
-          update: {
-            success: 'Status updated successfully',
-            error: 'Failed to update status',
-          },
-          delete: {
-            success: 'Status deleted successfully',
-          },
+      },
+      statuses: {
+        create: {
+          success: 'Status created successfully',
+          error: 'Failed to create status',
+        },
+        update: {
+          success: 'Status updated successfully',
+          error: 'Failed to update status',
+        },
+        delete: {
+          success: 'Status deleted successfully',
         },
       },
+
       authError: 'Access denied! Please login',
     },
     layouts: {
