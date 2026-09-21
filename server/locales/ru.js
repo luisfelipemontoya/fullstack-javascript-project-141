@@ -31,8 +31,12 @@ export default {
             success: 'Статус успешно создан',
             error: 'Не удалось создать статус',
           },
+          update: {
+            success: 'Статус успешно обновлен',
+            error: 'Не удалось обновить статус',
+          },
           delete: {
-            success: 'Status deleted successfully',
+            success: 'Статус успешно удален',
           },
         },
       },
@@ -82,8 +86,14 @@ export default {
           action: 'Создать статус',
           submit: 'Создавать',
         },
+        actions: 'Действия',
+        edit: {
+          header: 'Edit status',
+          action: 'Изменить статус',
+          submit: 'Сохранять',
+        },
         delete: {
-          action: 'Delete',
+          action: 'Удалить',
         },
       },
       welcome: {
