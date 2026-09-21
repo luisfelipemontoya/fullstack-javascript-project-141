@@ -74,6 +74,23 @@ export default (app) => {
       return reply;
     })
 
+    .delete('/statuses/:id', { name: 'deleteStatus' }, async (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const status = await app.objection.models.taskStatus.query().findById(req.params.id);
+
+      await status.$query().delete();
+
+      req.flash('info', i18next.t('flash.statuses.delete.success'));
+      reply.redirect(app.reverse('statuses'));
+
+      return reply;
+    })
+
     .post('/statuses', async (req, reply) => {
       if (!req.isAuthenticated()) {
         req.flash('error', i18next.t('flash.authError'));

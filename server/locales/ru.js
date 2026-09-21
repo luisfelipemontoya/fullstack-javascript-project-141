@@ -31,6 +31,9 @@ export default {
             success: 'Статус успешно создан',
             error: 'Не удалось создать статус',
           },
+          delete: {
+            success: 'Status deleted successfully',
+          },
         },
       },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
@@ -78,6 +81,9 @@ export default {
           header: 'Создать статус',
           action: 'Создать статус',
           submit: 'Создавать',
+        },
+        delete: {
+          action: 'Delete',
         },
       },
       welcome: {

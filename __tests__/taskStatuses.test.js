@@ -136,6 +136,38 @@ describe('test task statuses CRUD', () => {
     expect(updatedStatus).toMatchObject(params);
   });
 
+  it('delete', async () => {
+    const cookie = await signIn();
+    const status = await models.taskStatus.query().first();
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('status', { id: status.id }),
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const deletedStatus = await models.taskStatus.query().findById(status.id);
+
+    expect(deletedStatus).toBeUndefined();
+  });
+
+  it('cannot delete when unauthenticated', async () => {
+    const status = await models.taskStatus.query().first();
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('status', { id: status.id }),
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const existingStatus = await models.taskStatus.query().findById(status.id);
+
+    expect(existingStatus).toBeDefined();
+  });
+
   afterAll(async () => {
     await app.close();
   });

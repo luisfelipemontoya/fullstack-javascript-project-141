@@ -19,4 +19,11 @@ block content
           td= formatDate(status.createdAt)
           td
             if isAuthenticated()
-              a.btn.btn-primary(href=route('editStatus', { id: status.id }))= t('views.statuses.edit.action')
+              .d-flex.gap-2
+                a.btn.btn-primary(href=route('editStatus', { id: status.id }))= t('views.statuses.edit.action')
+                +buttonTo(
+                  route('deleteStatus', { id: status.id }),
+                  'DELETE',
+                  'btn btn-danger',
+                  t('views.statuses.delete.action')
+                )

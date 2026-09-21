@@ -35,6 +35,9 @@ export default {
             success: 'Status updated successfully',
             error: 'Failed to update status',
           },
+          delete: {
+            success: 'Status deleted successfully',
+          },
         },
       },
       authError: 'Access denied! Please login',
@@ -89,6 +92,9 @@ export default {
           header: 'Edit status',
           action: 'Edit',
           submit: 'Save',
+        },
+        delete: {
+          action: 'Delete',
         },
       },
       welcome: {
