@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Implement authentication",
+    "description": "Add authentication to the application",
+    "statusId": 1,
+    "creatorId": 1,
+    "executorId": 2
+  },
+  {
+    "name": "Create task page",
+    "description": "Implement the task details page",
+    "statusId": 2,
+    "creatorId": 2,
+    "executorId": null
+  }
+]
