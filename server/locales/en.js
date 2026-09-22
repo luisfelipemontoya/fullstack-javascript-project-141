@@ -3,6 +3,7 @@
 export default {
   translation: {
     appName: 'Task Manager',
+
     flash: {
       session: {
         create: {
@@ -13,6 +14,7 @@ export default {
           success: 'You are logged out',
         },
       },
+
       users: {
         create: {
           error: 'Failed to register',
@@ -26,6 +28,7 @@ export default {
           success: 'User deleted successfully',
         },
       },
+
       statuses: {
         create: {
           success: 'Status created successfully',
@@ -39,6 +42,7 @@ export default {
           success: 'Status deleted successfully',
         },
       },
+
       tasks: {
         create: {
           success: 'Task created successfully',
@@ -55,9 +59,11 @@ export default {
         signUp: 'Register',
         signOut: 'Logout',
         statuses: 'Statuses',
+        tasks: 'Tasks',
         footer: 'Task Manager',
       },
     },
+
     views: {
       session: {
         new: {
@@ -65,6 +71,7 @@ export default {
           submit: 'Login',
         },
       },
+
       users: {
         id: 'ID',
         fullName: 'Full name',
@@ -84,6 +91,7 @@ export default {
           action: 'Delete',
         },
       },
+
       statuses: {
         id: 'ID',
         name: 'Name',
@@ -103,13 +111,28 @@ export default {
           action: 'Delete',
         },
       },
+
       tasks: {
+        id: 'ID',
+        name: 'Name',
+        status: 'Status',
+        creator: 'Creator',
+        executor: 'Executor',
+        description: 'Description',
+        actions: 'Actions',
         new: {
           header: 'Create task',
-          status: 'Status',
-          creator: 'Creator',
-          executor: 'Executor',
-          description: 'Description',
+          submit: 'Create',
+        },
+
+        edit: {
+          header: 'Edit task',
+          action: 'Edit',
+          submit: 'Save',
+        },
+
+        delete: {
+          action: 'Delete',
         },
       },
       welcome: {

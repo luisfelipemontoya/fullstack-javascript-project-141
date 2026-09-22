@@ -13,6 +13,7 @@ export default {
           success: 'Вы разлогинены',
         },
       },
+
       users: {
         create: {
           error: 'Не удалось зарегистрировать',
@@ -26,6 +27,7 @@ export default {
           success: 'Пользователь успешно удален',
         },
       },
+
       statuses: {
         create: {
           success: 'Статус успешно создан',
@@ -47,16 +49,19 @@ export default {
       },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
+
     layouts: {
       application: {
         users: 'Пользователи',
         signIn: 'Вход',
         signUp: 'Регистрация',
         signOut: 'Выход',
-        statuses: 'Statuses',
+        statuses: 'Статусы',
+        tasks: 'Задачи',
         footer: 'Менеджер задач',
       },
     },
+
     views: {
       session: {
         new: {
@@ -64,6 +69,7 @@ export default {
           submit: 'Войти',
         },
       },
+
       users: {
         id: 'ID',
         fullName: 'Полное имя',
@@ -82,6 +88,7 @@ export default {
           action: 'Удалить',
         },
       },
+
       statuses: {
         id: 'ИДЕНТИФИКАТОР',
         name: 'Имя',
@@ -101,15 +108,31 @@ export default {
           action: 'Удалить',
         },
       },
+
       tasks: {
-        new: {
-          header: 'Создать задачу',
-          status: 'Статус',
-          creator: 'Создатель',
-          executor: 'Исполнитель завещания',
-          description: 'Описание',
-        },
+        id: 'ID',
+        name: 'Имя',
+        status: 'Статус',
+        creator: 'Создатель',
+        executor: 'Исполнитель завещания',
+        description: 'Описание',
+        actions: 'Действия',
       },
+      new: {
+        header: 'Создать задачу',
+        submit: 'Создавать',
+      },
+
+      edit: {
+        header: 'Редактировать задачу',
+        action: 'Редактировать',
+        submit: 'Сохранять',
+      },
+
+      delete: {
+        action: 'Удалить',
+      },
+
       welcome: {
         index: {
           hello: 'Управляйте своими задачами с легкостью',
