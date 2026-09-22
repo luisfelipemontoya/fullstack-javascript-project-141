@@ -38,6 +38,17 @@ export default (app) => {
       return reply;
     })
 
+    .get('/tasks/:id', { name: 'task' }, async (req, reply) => {
+      const task = await app.objection.models.task
+        .query()
+        .findById(req.params.id)
+        .withGraphFetched('[status, creator, executor]');
+
+      reply.render('tasks/show', { task });
+
+      return reply;
+    })
+
     .post('/tasks', async (req, reply) => {
       if (!req.isAuthenticated()) {
         req.flash('error', i18next.t('flash.authError'));

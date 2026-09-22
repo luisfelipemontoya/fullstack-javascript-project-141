@@ -106,6 +106,10 @@ export default {
       tasks: {
         new: {
           header: 'Create task',
+          status: 'Status',
+          creator: 'Creator',
+          executor: 'Executor',
+          description: 'Description',
         },
       },
       welcome: {

@@ -2,6 +2,7 @@
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { knexSnakeCaseMappers } from 'objection';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -16,6 +17,7 @@ export const development = {
   },
   useNullAsDefault: true,
   migrations,
+  ...knexSnakeCaseMappers(),
 };
 
 export const test = {
@@ -24,6 +26,7 @@ export const test = {
   useNullAsDefault: true,
   // debug: true,
   migrations,
+  ...knexSnakeCaseMappers(),
 };
 
 export const production = {
@@ -33,4 +36,5 @@ export const production = {
     ssl: { rejectUnauthorized: false },
   },
   migrations,
+  ...knexSnakeCaseMappers(),
 };

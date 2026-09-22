@@ -104,6 +104,10 @@ export default {
       tasks: {
         new: {
           header: 'Создать задачу',
+          status: 'Статус',
+          creator: 'Создатель',
+          executor: 'Исполнитель завещания',
+          description: 'Описание',
         },
       },
       welcome: {

@@ -48,6 +48,17 @@ describe('test tasks CRUD', () => {
     await knex('users').del();
 
     await prepareData(app);
+
+    const users = await models.user.query();
+    const statuses = await models.taskStatus.query();
+
+    await models.task.query().insert({
+      name: 'Implement authentication',
+      description: 'Add authentication to the application',
+      statusId: statuses[0].id,
+      creatorId: users[0].id,
+      executorId: users[1].id,
+    });
   });
 
   it('index', async () => {
@@ -83,11 +94,14 @@ describe('test tasks CRUD', () => {
   it('create', async () => {
     const cookie = await signIn();
 
+    const users = await models.user.query();
+    const statuses = await models.taskStatus.query();
+
     const params = {
       name: faker.lorem.words(3),
       description: faker.lorem.sentence(),
-      statusId: 1,
-      executorId: 2,
+      statusId: statuses[0].id,
+      executorId: users[1].id,
     };
 
     const response = await app.inject({
@@ -107,6 +121,17 @@ describe('test tasks CRUD', () => {
 
     expect(task).toMatchObject(params);
     expect(task.creatorId).toBeDefined();
+  });
+
+  it('show', async () => {
+    const task = await models.task.query().first();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `/tasks/${task.id}`,
+    });
+
+    expect(response.statusCode).toBe(200);
   });
 
   afterAll(async () => {
