@@ -48,6 +48,10 @@ export default {
           success: 'Task created successfully',
           error: 'Failed to create task',
         },
+        update: {
+          success: 'Task updated successfully',
+          error: 'Failed to update task',
+        },
       },
 
       authError: 'Access denied! Please login',

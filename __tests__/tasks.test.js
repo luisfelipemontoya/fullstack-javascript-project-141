@@ -134,6 +134,80 @@ describe('test tasks CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
+  it('edit', async () => {
+    const cookie = await signIn();
+    const task = await models.task.query().first();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `/tasks/${task.id}/edit`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it('cannot edit task when unauthenticated', async () => {
+    const task = await models.task.query().first();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `/tasks/${task.id}/edit`,
+    });
+
+    expect(response.statusCode).toBe(302);
+  });
+
+  it('update', async () => {
+    const cookie = await signIn();
+    const task = await models.task.query().first();
+    const statuses = await models.taskStatus.query();
+    const users = await models.user.query();
+
+    const params = {
+      name: faker.lorem.words(3),
+      description: faker.lorem.sentence(),
+      statusId: statuses[1].id,
+      executorId: users[1].id,
+    };
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/tasks/${task.id}`,
+      cookies: cookie,
+      payload: {
+        data: params,
+      },
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const updatedTask = await models.task.query().findById(task.id);
+
+    expect(updatedTask).toMatchObject(params);
+    expect(updatedTask.creatorId).toBe(task.creatorId);
+  });
+
+  it('cannot update task when unauthenticated', async () => {
+    const task = await models.task.query().first();
+
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/tasks/${task.id}`,
+      payload: {
+        data: {
+          name: 'Unauthorized update',
+        },
+      },
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const unchangedTask = await models.task.query().findById(task.id);
+
+    expect(unchangedTask.name).toBe(task.name);
+  });
+
   afterAll(async () => {
     await app.close();
   });

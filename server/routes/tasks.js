@@ -49,6 +49,71 @@ export default (app) => {
       return reply;
     })
 
+    .get('/tasks/:id/edit', { name: 'editTask' }, async (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const task = await app.objection.models.task.query().findById(req.params.id);
+
+      const statuses = await app.objection.models.taskStatus.query();
+      const users = await app.objection.models.user.query();
+
+      const header = i18next.t('views.tasks.edit.header');
+
+      reply.render('tasks/edit', {
+        task,
+        statuses,
+        users,
+        header,
+      });
+
+      return reply;
+    })
+    .patch('/tasks/:id', async (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const task = await app.objection.models.task.query().findById(req.params.id);
+
+      const taskData = {
+        name: req.body.data.name,
+        description: req.body.data.description,
+        statusId: Number(req.body.data.statusId),
+        executorId: req.body.data.executorId ? Number(req.body.data.executorId) : null,
+      };
+
+      task.$set(taskData);
+
+      try {
+        await task.$query().patch(taskData);
+
+        req.flash('info', i18next.t('flash.tasks.update.success'));
+        reply.redirect(app.reverse('task', { id: task.id }));
+      } catch ({ data }) {
+        req.flash('error', i18next.t('flash.tasks.update.error'));
+
+        const statuses = await app.objection.models.taskStatus.query();
+        const users = await app.objection.models.user.query();
+        const header = i18next.t('views.tasks.edit.header');
+
+        reply.render('tasks/edit', {
+          task,
+          statuses,
+          users,
+          errors: data,
+          header,
+        });
+      }
+
+      return reply;
+    })
+
     .post('/tasks', async (req, reply) => {
       if (!req.isAuthenticated()) {
         req.flash('error', i18next.t('flash.authError'));

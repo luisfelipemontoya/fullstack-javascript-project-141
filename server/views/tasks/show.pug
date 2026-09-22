@@ -19,3 +19,8 @@ block content
 
     if task.description
       p= task.description
+
+    if isAuthenticated()
+      a.btn.btn-primary(
+        href=route('editTask', { id: task.id })
+      )= t('views.tasks.edit.action')

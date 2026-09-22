@@ -1,0 +1,42 @@
+extends ../layouts/application.pug
+
+block content
+  form(action=route('task', { id: task.id }), method='post')
+    input(type='hidden', name='_method', value='PATCH')
+
+    .mb-3
+      label.form-label(for='name')= t('views.tasks.name')
+      input.form-control(
+        id='name'
+        type='text'
+        name='data[name]'
+        value=task.name || ''
+      )
+
+    .mb-3
+      label.form-label(for='description')= t('views.tasks.description')
+      textarea.form-control(
+        id='description'
+        name='data[description]'
+      )= task.description || ''
+
+    .mb-3
+      label.form-label(for='statusId')= t('views.tasks.status')
+      select.form-select(id='statusId', name='data[statusId]')
+        each status in statuses
+          option(
+            value=status.id
+            selected=task.statusId === status.id
+          )= status.name
+
+    .mb-3
+      label.form-label(for='executorId')= t('views.tasks.executor')
+      select.form-select(id='executorId', name='data[executorId]')
+        option(value='', selected=!task.executorId) -
+        each user in users
+          option(
+            value=user.id
+            selected=task.executorId === user.id
+          )= `${user.firstName} ${user.lastName}`
+
+    button.btn.btn-primary(type='submit')= t('views.tasks.edit.submit')
