@@ -39,6 +39,12 @@ export default {
           success: 'Статус успешно удален',
         },
       },
+      tasks: {
+        create: {
+          success: 'Задача успешно создана',
+          error: 'Не удалось создать задачу',
+        },
+      },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
     layouts: {
@@ -93,6 +99,11 @@ export default {
         },
         delete: {
           action: 'Удалить',
+        },
+      },
+      tasks: {
+        new: {
+          header: 'Создать задачу',
         },
       },
       welcome: {

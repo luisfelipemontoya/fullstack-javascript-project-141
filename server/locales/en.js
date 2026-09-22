@@ -39,6 +39,12 @@ export default {
           success: 'Status deleted successfully',
         },
       },
+      tasks: {
+        create: {
+          success: 'Task created successfully',
+          error: 'Failed to create task',
+        },
+      },
 
       authError: 'Access denied! Please login',
     },
@@ -95,6 +101,11 @@ export default {
         },
         delete: {
           action: 'Delete',
+        },
+      },
+      tasks: {
+        new: {
+          header: 'Create task',
         },
       },
       welcome: {
