@@ -42,7 +42,9 @@ describe('test task statuses CRUD', () => {
   });
 
   beforeEach(async () => {
+    await knex('tasks_labels').del();
     await knex('tasks').del();
+    await knex('labels').del();
     await knex('task_statuses').del();
     await knex('users').del();
 

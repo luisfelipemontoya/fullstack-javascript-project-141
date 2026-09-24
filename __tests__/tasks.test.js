@@ -43,7 +43,9 @@ describe('test tasks CRUD', () => {
   });
 
   beforeEach(async () => {
+    await knex('tasks_labels').del();
     await knex('tasks').del();
+    await knex('labels').del();
     await knex('task_statuses').del();
     await knex('users').del();
 
@@ -59,6 +61,23 @@ describe('test tasks CRUD', () => {
       creatorId: users[0].id,
       executorId: users[1].id,
     });
+  });
+
+  it('task has many labels', async () => {
+    const task = await models.task.query().first();
+    const labels = await models.label.query();
+
+    await task.$relatedQuery('labels').relate(labels[0].id);
+    await task.$relatedQuery('labels').relate(labels[1].id);
+
+    const taskWithLabels = await models.task
+      .query()
+      .findById(task.id)
+      .withGraphFetched('labels');
+
+    expect(taskWithLabels.labels).toHaveLength(2);
+    expect(taskWithLabels.labels[0].name).toBe('bug');
+    expect(taskWithLabels.labels[1].name).toBe('feature');
   });
 
   it('index', async () => {
