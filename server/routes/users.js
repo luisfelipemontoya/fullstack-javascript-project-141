@@ -57,6 +57,7 @@ export default (app) => {
       }
       return reply;
     })
+
     .delete('/users/:id', { name: 'deleteUser' }, async (req, reply) => {
       if (!req.isAuthenticated() || req.user.id !== Number(req.params.id)) {
         reply.redirect(app.reverse('root'));
@@ -64,6 +65,18 @@ export default (app) => {
       }
 
       const user = await app.objection.models.user.query().findById(req.params.id);
+
+      const relatedTask = await app.objection.models.task
+        .query()
+        .where('creatorId', req.params.id)
+        .orWhere('executorId', req.params.id)
+        .first();
+
+      if (relatedTask) {
+        req.flash('error', i18next.t('flash.users.delete.error'));
+        reply.redirect(app.reverse('users'));
+        return reply;
+      }
 
       await user.$query().delete();
 

@@ -208,6 +208,52 @@ describe('test tasks CRUD', () => {
     expect(unchangedTask.name).toBe(task.name);
   });
 
+  it('creator can delete task', async () => {
+    const cookie = await signIn();
+
+    const users = await models.user.query();
+    const statuses = await models.taskStatus.query();
+
+    const creator = users.find((user) => user.email === testData.users.existing.email);
+
+    const task = await models.task.query().insert({
+      name: 'Task to delete',
+      description: 'Created by authenticated user',
+      statusId: statuses[0].id,
+      creatorId: creator.id,
+      executorId: null,
+    });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/tasks/${task.id}`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const deletedTask = await models.task.query().findById(task.id);
+
+    expect(deletedTask).toBeUndefined();
+  });
+
+  it('non-creator cannot delete task', async () => {
+    const cookie = await signIn();
+    const task = await models.task.query().first();
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/tasks/${task.id}`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const existingTask = await models.task.query().findById(task.id);
+
+    expect(existingTask).toBeDefined();
+  });
+
   afterAll(async () => {
     await app.close();
   });

@@ -190,6 +190,33 @@ describe('test users CRUD', () => {
 
     expect(existingUser).toBeDefined();
   });
+  it('cannot delete user associated with a task', async () => {
+    const cookie = await signIn();
+
+    const users = await models.user.query();
+    const statuses = await models.taskStatus.query();
+    const user = users[0];
+
+    await models.task.query().insert({
+      name: 'Task with user',
+      description: 'Task used to test user restriction',
+      statusId: statuses[0].id,
+      creatorId: user.id,
+      executorId: null,
+    });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/users/${user.id}`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const existingUser = await models.user.query().findById(user.id);
+
+    expect(existingUser).toBeDefined();
+  });
 
   afterEach(async () => {
     // Пока Segmentation fault: 11

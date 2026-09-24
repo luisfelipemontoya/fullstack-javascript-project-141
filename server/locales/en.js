@@ -26,6 +26,7 @@ export default {
         },
         delete: {
           success: 'User deleted successfully',
+          error: 'Cannot delete a user associated with a task',
         },
       },
 
@@ -40,6 +41,7 @@ export default {
         },
         delete: {
           success: 'Status deleted successfully',
+          error: 'Cannot delete a status associated with a task',
         },
       },
 
@@ -51,6 +53,10 @@ export default {
         update: {
           success: 'Task updated successfully',
           error: 'Failed to update task',
+        },
+        delete: {
+          success: 'Task deleted successfully',
+          error: 'Only the task creator can delete it',
         },
       },
 

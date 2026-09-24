@@ -114,6 +114,29 @@ export default (app) => {
       return reply;
     })
 
+    .delete('/tasks/:id', async (req, reply) => {
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      const task = await app.objection.models.task.query().findById(req.params.id);
+
+      if (task.creatorId !== req.user.id) {
+        req.flash('error', i18next.t('flash.tasks.delete.error'));
+        reply.redirect(app.reverse('tasks'));
+        return reply;
+      }
+
+      await task.$query().delete();
+
+      req.flash('info', i18next.t('flash.tasks.delete.success'));
+      reply.redirect(app.reverse('tasks'));
+
+      return reply;
+    })
+
     .post('/tasks', async (req, reply) => {
       if (!req.isAuthenticated()) {
         req.flash('error', i18next.t('flash.authError'));

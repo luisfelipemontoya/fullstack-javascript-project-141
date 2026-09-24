@@ -170,6 +170,34 @@ describe('test task statuses CRUD', () => {
     expect(existingStatus).toBeDefined();
   });
 
+  it('cannot delete status associated with a task', async () => {
+    const cookie = await signIn();
+
+    const users = await models.user.query();
+    const statuses = await models.taskStatus.query();
+    const status = statuses[0];
+
+    await models.task.query().insert({
+      name: 'Task with status',
+      description: 'Task used to test status restriction',
+      statusId: status.id,
+      creatorId: users[0].id,
+      executorId: null,
+    });
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/statuses/${status.id}`,
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const existingStatus = await models.taskStatus.query().findById(status.id);
+
+    expect(existingStatus).toBeDefined();
+  });
+
   afterAll(async () => {
     await app.close();
   });
