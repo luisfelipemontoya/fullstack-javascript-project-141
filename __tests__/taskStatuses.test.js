@@ -162,7 +162,7 @@ describe('test task statuses CRUD', () => {
 
     const response = await app.inject({
       method: 'DELETE',
-      url: app.reverse('status', { id: status.id }),
+      url: app.reverse('deleteStatus', { id: status.id }),
     });
 
     expect(response.statusCode).toBe(302);
