@@ -57,6 +57,22 @@ export default {
           error: 'Только создатель задачи может её удалить.',
         },
       },
+
+      labels: {
+        create: {
+          success: 'Ярлык успешно создан',
+          error: 'Не удалось создать метку',
+        },
+        update: {
+          success: 'Метка успешно обновлена',
+          error: 'Не удалось обновить метку',
+        },
+        delete: {
+          success: 'Метка успешно удалена',
+          error: 'Не удалось удалить метку',
+        },
+      },
+
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
     },
 
@@ -67,6 +83,7 @@ export default {
         signUp: 'Регистрация',
         signOut: 'Выход',
         statuses: 'Статусы',
+        labels: 'Метки',
         tasks: 'Задачи',
         footer: 'Менеджер задач',
       },
@@ -141,6 +158,25 @@ export default {
 
       delete: {
         action: 'Удалить',
+      },
+
+      labels: {
+        id: 'ID',
+        name: 'Name',
+        createdAt: 'Создано',
+        new: {
+          header: 'Создать метку',
+          action: 'Создать метку',
+          submit: 'Создавать',
+        },
+        edit: {
+          header: 'этикетка',
+          action: 'Редактировать',
+          submit: 'Сохранять',
+        },
+        delete: {
+          action: 'Удалить',
+        },
       },
 
       welcome: {

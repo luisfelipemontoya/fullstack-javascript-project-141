@@ -1,0 +1,9 @@
+extends ../layouts/application
+include ../mixins/input
+include ../mixins/submit
+
+block content
+  form(action=route('label', { id: label.id }), method="post")
+    input(type="hidden", name="_method", value="PATCH")
+    +input(label, 'name', errors, 'text')
+    +submit(t('views.labels.edit.submit'))
