@@ -24,5 +24,13 @@
     "updated": {
       "name": "ready for review"
     }
+  },
+  "labels": {
+    "new": {
+      "name": "urgent"
+    },
+    "updated": {
+      "name": "very urgent"
+    }
   }
 }

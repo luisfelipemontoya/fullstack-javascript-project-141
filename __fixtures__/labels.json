@@ -1,11 +1,11 @@
 [
-    {
-        "name": "bug"
-    },
-    {
-        "name": "feature"
-    },
-    {
-        "name": "documentation"
-    }
+  {
+    "name": "bug"
+  },
+  {
+    "name": "feature"
+  },
+  {
+    "name": "documentation"
+  }
 ]
