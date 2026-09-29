@@ -83,6 +83,14 @@ export default (app) => {
 
       const label = await app.objection.models.label.query().findById(req.params.id);
 
+      const relatedTask = await label.$relatedQuery('tasks').first();
+
+      if (relatedTask) {
+        req.flash('error', i18next.t('flash.labels.delete.error'));
+        reply.redirect(app.reverse('labels'));
+        return reply;
+      }
+
       await label.$query().delete();
 
       req.flash('info', i18next.t('flash.labels.delete.success'));

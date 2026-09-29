@@ -157,6 +157,36 @@ describe('test labels CRUD', () => {
     expect(deletedLabel).toBeUndefined();
   });
 
+  it('cannot delete label associated with task', async () => {
+    const cookie = await signIn();
+
+    const label = await models.label.query().first();
+    const users = await models.user.query();
+    const statuses = await models.taskStatus.query();
+
+    const task = await models.task.query().insert({
+      name: 'Task with label',
+      description: 'Task associated with a label',
+      statusId: statuses[0].id,
+      creatorId: users[0].id,
+      executorId: users[1].id,
+    });
+
+    await task.$relatedQuery('labels').relate(label.id);
+
+    const response = await app.inject({
+      method: 'DELETE',
+      url: app.reverse('deleteLabel', { id: label.id }),
+      cookies: cookie,
+    });
+
+    expect(response.statusCode).toBe(302);
+
+    const existingLabel = await models.label.query().findById(label.id);
+
+    expect(existingLabel).toBeDefined();
+  });
+
   it('cannot delete when unauthenticated', async () => {
     const label = await models.label.query().first();
 
