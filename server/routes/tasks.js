@@ -25,6 +25,7 @@ export default (app) => {
 
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
+      const labels = await app.objection.models.label.query();
 
       const header = i18next.t('views.tasks.new.header');
 
@@ -32,6 +33,7 @@ export default (app) => {
         task,
         statuses,
         users,
+        labels,
         header,
       });
 
@@ -42,7 +44,7 @@ export default (app) => {
       const task = await app.objection.models.task
         .query()
         .findById(req.params.id)
-        .withGraphFetched('[status, creator, executor]');
+        .withGraphFetched('[status, creator, executor, labels]');
 
       reply.render('tasks/show', { task });
 
@@ -56,10 +58,14 @@ export default (app) => {
         return reply;
       }
 
-      const task = await app.objection.models.task.query().findById(req.params.id);
+      const task = await app.objection.models.task
+        .query()
+        .findById(req.params.id)
+        .withGraphFetched('labels');
 
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
+      const labels = await app.objection.models.label.query();
 
       const header = i18next.t('views.tasks.edit.header');
 
@@ -67,6 +73,7 @@ export default (app) => {
         task,
         statuses,
         users,
+        labels,
         header,
       });
 
@@ -81,6 +88,8 @@ export default (app) => {
 
       const task = await app.objection.models.task.query().findById(req.params.id);
 
+      const labelIds = req.body.data.labelIds || [];
+
       const taskData = {
         name: req.body.data.name,
         description: req.body.data.description,
@@ -93,6 +102,12 @@ export default (app) => {
       try {
         await task.$query().patch(taskData);
 
+        await task.$relatedQuery('labels').unrelate();
+
+        for (const labelId of labelIds) {
+          await task.$relatedQuery('labels').relate(Number(labelId));
+        }
+
         req.flash('info', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('task', { id: task.id }));
       } catch ({ data }) {
@@ -100,12 +115,14 @@ export default (app) => {
 
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
+        const labels = await app.objection.models.label.query();
         const header = i18next.t('views.tasks.edit.header');
 
         reply.render('tasks/edit', {
           task,
           statuses,
           users,
+          labels,
           errors: data,
           header,
         });
@@ -144,8 +161,11 @@ export default (app) => {
         return reply;
       }
 
+      const labelIds = req.body.data.labelIds || [];
+
       const taskData = {
-        ...req.body.data,
+        name: req.body.data.name,
+        description: req.body.data.description,
         statusId: Number(req.body.data.statusId),
         executorId: req.body.data.executorId ? Number(req.body.data.executorId) : null,
         creatorId: req.user.id,
@@ -157,22 +177,30 @@ export default (app) => {
       try {
         const validTask = app.objection.models.task.fromJson(taskData);
 
-        await app.objection.models.task.query().insert(validTask);
+        const createdTask = await app.objection.models.task.query().insert(validTask);
+
+        for (const labelId of labelIds) {
+          await createdTask.$relatedQuery('labels').relate(Number(labelId));
+        }
 
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
-      } catch ({ data }) {
+      } catch (error) {
+        const errors = error.data;
+
         req.flash('error', i18next.t('flash.tasks.create.error'));
 
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
+        const labels = await app.objection.models.label.query();
         const header = i18next.t('views.tasks.new.header');
 
         reply.render('tasks/new', {
           task,
           statuses,
           users,
-          errors: data,
+          labels,
+          errors,
           header,
         });
       }

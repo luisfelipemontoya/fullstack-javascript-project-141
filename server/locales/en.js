@@ -146,6 +146,7 @@ export default {
         executor: 'Executor',
         description: 'Description',
         actions: 'Actions',
+        labels: 'Labels',
         new: {
           header: 'Create task',
           submit: 'Create',

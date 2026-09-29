@@ -144,6 +144,7 @@ export default {
         executor: 'Исполнитель завещания',
         description: 'Описание',
         actions: 'Действия',
+        labels: 'Метки',
       },
       new: {
         header: 'Создать задачу',

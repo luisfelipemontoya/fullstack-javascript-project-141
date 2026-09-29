@@ -70,10 +70,7 @@ describe('test tasks CRUD', () => {
     await task.$relatedQuery('labels').relate(labels[0].id);
     await task.$relatedQuery('labels').relate(labels[1].id);
 
-    const taskWithLabels = await models.task
-      .query()
-      .findById(task.id)
-      .withGraphFetched('labels');
+    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched('labels');
 
     expect(taskWithLabels.labels).toHaveLength(2);
     expect(taskWithLabels.labels[0].name).toBe('bug');
@@ -115,6 +112,7 @@ describe('test tasks CRUD', () => {
 
     const users = await models.user.query();
     const statuses = await models.taskStatus.query();
+    const labels = await models.label.query();
 
     const params = {
       name: faker.lorem.words(3),
@@ -128,7 +126,10 @@ describe('test tasks CRUD', () => {
       url: app.reverse('tasks'),
       cookies: cookie,
       payload: {
-        data: params,
+        data: {
+          ...params,
+          labelIds: [labels[0].id, labels[1].id],
+        },
       },
     });
 
@@ -140,6 +141,11 @@ describe('test tasks CRUD', () => {
 
     expect(task).toMatchObject(params);
     expect(task.creatorId).toBeDefined();
+
+    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched('labels');
+
+    expect(taskWithLabels.labels).toHaveLength(2);
+    expect(taskWithLabels.labels.map((label) => label.id)).toEqual([labels[0].id, labels[1].id]);
   });
 
   it('show', async () => {
@@ -182,6 +188,10 @@ describe('test tasks CRUD', () => {
     const task = await models.task.query().first();
     const statuses = await models.taskStatus.query();
     const users = await models.user.query();
+    const labels = await models.label.query();
+
+    await task.$relatedQuery('labels').relate(labels[0].id);
+    await task.$relatedQuery('labels').relate(labels[1].id);
 
     const params = {
       name: faker.lorem.words(3),
@@ -195,7 +205,10 @@ describe('test tasks CRUD', () => {
       url: `/tasks/${task.id}`,
       cookies: cookie,
       payload: {
-        data: params,
+        data: {
+          ...params,
+          labelIds: [labels[2].id],
+        },
       },
     });
 
@@ -205,6 +218,11 @@ describe('test tasks CRUD', () => {
 
     expect(updatedTask).toMatchObject(params);
     expect(updatedTask.creatorId).toBe(task.creatorId);
+
+    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched('labels');
+
+    expect(taskWithLabels.labels).toHaveLength(1);
+    expect(taskWithLabels.labels[0].id).toBe(labels[2].id);
   });
 
   it('cannot update task when unauthenticated', async () => {
