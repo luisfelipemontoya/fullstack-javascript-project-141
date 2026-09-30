@@ -18,6 +18,29 @@ block content
                   selected=String(status.id) === filters.status
                 )= status.name
 
+        .col-md-4
+          .input-group
+            label.input-group-text(for='executor') Ejecutor
+            select.form-select(id='executor', name='executor')
+              option(value='', selected=filters.executor === '')
+              each user in users
+                option(
+                  value=user.id
+                  selected=String(user.id) === filters.executor
+                )= `${user.firstName} ${user.lastName}`
+                
+      if isAuthenticated()
+        .form-check.mt-3
+          input.form-check-input(
+            type='checkbox'
+            id='isCreatorUser'
+            name='isCreatorUser'
+            value='1'
+            checked=filters.isCreatorUser
+          )
+          label.form-check-label(for='isCreatorUser') Solo mis tareas
+
+
       .mt-3
         button.btn.btn-primary(type='submit') Mostrar
 

@@ -373,6 +373,136 @@ describe('test tasks CRUD', () => {
     expect(existingTask).toBeDefined();
   });
 
+  describe('executor and creator filters', () => {
+    let currentUser;
+    let otherUser;
+    let firstStatus;
+    let secondStatus;
+
+    const taskNames = {
+      a: 'Filter task A',
+      b: 'Filter task B',
+      c: 'Filter task C',
+      d: 'Filter task D',
+    };
+
+    beforeEach(async () => {
+      await models.task.query().delete();
+
+      const users = await models.user.query();
+      const statuses = await models.taskStatus.query();
+
+      currentUser = users.find((user) => user.email === testData.users.existing.email);
+      otherUser = users.find((user) => user.id !== currentUser.id);
+      [firstStatus, secondStatus] = statuses;
+
+      const tasks = [
+        {
+          name: taskNames.a,
+          creatorId: currentUser.id,
+          executorId: otherUser.id,
+          statusId: firstStatus.id,
+        },
+        {
+          name: taskNames.b,
+          creatorId: otherUser.id,
+          executorId: currentUser.id,
+          statusId: firstStatus.id,
+        },
+        {
+          name: taskNames.c,
+          creatorId: currentUser.id,
+          executorId: currentUser.id,
+          statusId: secondStatus.id,
+        },
+        {
+          name: taskNames.d,
+          creatorId: otherUser.id,
+          executorId: otherUser.id,
+          statusId: secondStatus.id,
+        },
+      ];
+
+      for (const task of tasks) {
+        await models.task.query().insert(task);
+      }
+    });
+
+    it('filters tasks by executor', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?executor=${currentUser.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain(taskNames.b);
+      expect(response.body).toContain(taskNames.c);
+      expect(response.body).not.toContain(taskNames.a);
+      expect(response.body).not.toContain(taskNames.d);
+    });
+
+    it('combines status and executor filters', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?status=${firstStatus.id}&executor=${currentUser.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain(taskNames.b);
+      expect(response.body).not.toContain(taskNames.a);
+      expect(response.body).not.toContain(taskNames.c);
+      expect(response.body).not.toContain(taskNames.d);
+    });
+
+    it('filters by the current user as creator, not executor', async () => {
+      const cookies = await signIn();
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?isCreatorUser=1`,
+        cookies,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain(taskNames.a);
+      expect(response.body).toContain(taskNames.c);
+      expect(response.body).not.toContain(taskNames.b);
+      expect(response.body).not.toContain(taskNames.d);
+    });
+
+    it('combines status, executor and creator filters', async () => {
+      const cookies = await signIn();
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?status=${secondStatus.id}&executor=${currentUser.id}&isCreatorUser=1`,
+        cookies,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain(taskNames.c);
+      expect(response.body).not.toContain(taskNames.a);
+      expect(response.body).not.toContain(taskNames.b);
+      expect(response.body).not.toContain(taskNames.d);
+    });
+
+    it('shows all tasks when executor is empty and creator filter is absent', async () => {
+      const cookies = await signIn();
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?executor=`,
+        cookies,
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      for (const name of Object.values(taskNames)) {
+        expect(response.body).toContain(name);
+      }
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });

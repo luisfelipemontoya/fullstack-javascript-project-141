@@ -6,6 +6,8 @@ export default (app) => {
   app
     .get('/tasks', { name: 'tasks' }, async (req, reply) => {
       const status = req.query.status || '';
+      const executor = req.query.executor || '';
+      const isCreatorUser = req.isAuthenticated() && req.query.isCreatorUser === '1';
 
       const tasksQuery = app.objection.models.task
         .query()
@@ -15,13 +17,23 @@ export default (app) => {
         tasksQuery.where('tasks.statusId', Number(status));
       }
 
+      if (executor !== '') {
+        tasksQuery.where('tasks.executorId', Number(executor));
+      }
+
+      if (isCreatorUser) {
+        tasksQuery.where('tasks.creatorId', req.user.id);
+      }
+
       const tasks = await tasksQuery;
       const statuses = await app.objection.models.taskStatus.query();
+      const users = await app.objection.models.user.query();
 
       reply.render('tasks/index', {
         tasks,
         statuses,
-        filters: { status },
+        users,
+        filters: { status, executor, isCreatorUser },
       });
 
       return reply;
