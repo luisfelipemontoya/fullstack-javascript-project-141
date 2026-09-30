@@ -86,6 +86,88 @@ describe('test tasks CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
+  it('filters tasks by status', async () => {
+    const existingTask = await models.task.query().first();
+    const statuses = await models.taskStatus.query();
+
+    const otherStatus = statuses.find((status) => status.id !== existingTask.statusId);
+
+    const otherTask = await models.task.query().insert({
+      name: 'Task belonging to another status',
+      statusId: otherStatus.id,
+      creatorId: existingTask.creatorId,
+    });
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `${app.reverse('tasks')}?status=${otherStatus.id}`,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toContain(otherTask.name);
+    expect(response.body).not.toContain(existingTask.name);
+  });
+
+  it('shows all tasks when the status filter is empty', async () => {
+    const existingTask = await models.task.query().first();
+    const statuses = await models.taskStatus.query();
+    const otherStatus = statuses.find((status) => status.id !== existingTask.statusId);
+
+    const otherTask = await models.task.query().insert({
+      name: 'Task with a different status',
+      statusId: otherStatus.id,
+      creatorId: existingTask.creatorId,
+    });
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `${app.reverse('tasks')}?status=`,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toContain(existingTask.name);
+    expect(response.body).toContain(otherTask.name);
+  });
+
+  it('shows no tasks when the selected status has no tasks', async () => {
+    const existingTask = await models.task.query().first();
+
+    const emptyStatus = await models.taskStatus.query().insert({
+      name: 'Status without tasks',
+    });
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `${app.reverse('tasks')}?status=${emptyStatus.id}`,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).not.toContain(existingTask.name);
+    expect(response.body).not.toContain(`href="${app.reverse('task', { id: existingTask.id })}"`);
+  });
+
+  it('keeps the selected status in the filter form', async () => {
+    const task = await models.task.query().first();
+
+    const response = await app.inject({
+      method: 'GET',
+      url: `${app.reverse('tasks')}?status=${task.statusId}`,
+    });
+
+    const statusSelect = response.body.match(
+      /<select\b[^>]*\bid="status"[^>]*>([\s\S]*?)<\/select>/,
+    );
+
+    expect(response.statusCode).toBe(200);
+    expect(statusSelect).not.toBeNull();
+
+    const selectedOption = new RegExp(
+      `<option\\b(?=[^>]*\\bvalue="${task.statusId}")(?=[^>]*\\sselected(?:\\s|=|>))[^>]*>`,
+    );
+
+    expect(statusSelect[1]).toMatch(selectedOption);
+  });
+
   it('new', async () => {
     const cookie = await signIn();
 

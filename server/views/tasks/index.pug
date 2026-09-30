@@ -5,6 +5,22 @@ block content
     if isAuthenticated()
       a.btn.btn-primary.mb-3(href=route('newTask'))= t('views.tasks.new.header')
 
+    form.card.card-body.mb-4(action=route('tasks'), method='get')
+      .row.g-3
+        .col-md-4
+          .input-group
+            label.input-group-text(for='status') Estado
+            select.form-select(id='status', name='status')
+              option(value='', selected=filters.status === '')
+              each status in statuses
+                option(
+                  value=status.id
+                  selected=String(status.id) === filters.status
+                )= status.name
+
+      .mt-3
+        button.btn.btn-primary(type='submit') Mostrar
+
     table.table
       thead
         tr

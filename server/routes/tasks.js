@@ -4,12 +4,25 @@ import i18next from 'i18next';
 
 export default (app) => {
   app
-    .get('/tasks', { name: 'tasks' }, async (_req, reply) => {
-      const tasks = await app.objection.models.task
+    .get('/tasks', { name: 'tasks' }, async (req, reply) => {
+      const status = req.query.status || '';
+
+      const tasksQuery = app.objection.models.task
         .query()
         .withGraphFetched('[status, creator, executor]');
 
-      reply.render('tasks/index', { tasks });
+      if (status !== '') {
+        tasksQuery.where('tasks.statusId', Number(status));
+      }
+
+      const tasks = await tasksQuery;
+      const statuses = await app.objection.models.taskStatus.query();
+
+      reply.render('tasks/index', {
+        tasks,
+        statuses,
+        filters: { status },
+      });
 
       return reply;
     })
