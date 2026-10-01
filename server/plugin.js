@@ -19,6 +19,7 @@ import i18next from 'i18next';
 
 import ru from './locales/ru.js';
 import en from './locales/en.js';
+import es from './locales/es.js';
 // @ts-expect-error
 import addRoutes from './routes/index.js';
 import getHelpers from './helpers/index.js';
@@ -61,12 +62,13 @@ const setUpStaticAssets = (app) => {
 
 const setupLocalization = async () => {
   await i18next.init({
-    lng: 'en',
+    lng: 'es',
     fallbackLng: 'ru',
     // debug: isDevelopment,
     resources: {
       ru,
       en,
+      es,
     },
   });
 };

@@ -4,7 +4,7 @@ mixin input(entity, propertyName, errors, type = 'text')
   - const inputId = `data_${propertyName}`
 
   .mb-3
-    label(for=inputId)= propertyName
+    label(for=inputId)= t(`fields.${propertyName}`)
     input.form-control(
       class=hasError ? 'is-invalid' : ''
       id=inputId
