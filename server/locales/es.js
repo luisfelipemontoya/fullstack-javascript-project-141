@@ -11,7 +11,7 @@ export default {
     fields: {
       firstName: 'Nombre',
       lastName: 'Apellido',
-      email: 'Correo electronico',
+      email: 'Correo electrónico',
       password: 'Contraseña',
       name: 'Nombre',
     },
@@ -31,6 +31,7 @@ export default {
 
     flash: {
       ...en.translation.flash,
+      authError: '¡Acceso denegado! Por favor, inicia sesión.',
       users: {
         ...en.translation.flash.users,
         create: {
