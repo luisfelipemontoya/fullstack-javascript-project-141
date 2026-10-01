@@ -83,7 +83,7 @@ export default (app) => {
       req.logOut();
       req.flash('info', i18next.t('flash.users.delete.success'));
 
-      reply.redirect(app.reverse('root'));
+      reply.redirect(app.reverse('users'));
       return reply;
     })
 

@@ -38,6 +38,10 @@ export default {
           success: 'Has iniciado sesión',
           error: 'Correo electrónico o contraseña incorrectos',
         },
+        delete: {
+          ...en.translation.flash.session.delete,
+          success: 'Has cerrado sesión',
+        },
       },
       authError: '¡Acceso denegado! Por favor, inicia sesión.',
       users: {
@@ -58,6 +62,7 @@ export default {
         new: {
           ...en.translation.views.statuses.new,
           action: 'Crear estado',
+          submit: 'Crear',
         },
       },
 
@@ -66,6 +71,7 @@ export default {
         new: {
           ...en.translation.views.labels.new,
           action: 'Crear etiqueta',
+          submit: 'Crear',
         },
       },
 
@@ -82,6 +88,7 @@ export default {
         edit: {
           ...en.translation.views.users.edit,
           action: 'Actualizar',
+          submit: 'Actualizar',
         },
         delete: {
           ...en.translation.views.users.delete,

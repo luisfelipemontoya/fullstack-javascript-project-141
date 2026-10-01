@@ -19,7 +19,7 @@ block content
           td= user.email
           td= formatDate(user.createdAt)
           td
-            if isAuthenticated() && reply.request.user.id === user.id
+            if isAuthenticated()
               .d-flex
                 a.btn.btn-primary(
                   href=route('editUser', { id: String(user.id) })
