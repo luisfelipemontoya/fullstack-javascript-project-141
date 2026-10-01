@@ -10,6 +10,12 @@ export default (app) => {
       const label = req.query.label || '';
       const isCreatorUser = req.isAuthenticated() && req.query.isCreatorUser === '1';
 
+      if (!req.isAuthenticated()) {
+        req.flash('error', i18next.t('flash.authError'));
+        reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
       const tasksQuery = app.objection.models.task
         .query()
         .withGraphJoined('[status, creator, executor, labels]');

@@ -78,15 +78,18 @@ describe('test tasks CRUD', () => {
   });
 
   it('index', async () => {
+    const cookies = await signIn();
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('tasks'),
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
   it('filters tasks by status', async () => {
+    const cookies = await signIn();
     const existingTask = await models.task.query().first();
     const statuses = await models.taskStatus.query();
 
@@ -101,6 +104,7 @@ describe('test tasks CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: `${app.reverse('tasks')}?status=${otherStatus.id}`,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -109,6 +113,7 @@ describe('test tasks CRUD', () => {
   });
 
   it('shows all tasks when the status filter is empty', async () => {
+    const cookies = await signIn();
     const existingTask = await models.task.query().first();
     const statuses = await models.taskStatus.query();
     const otherStatus = statuses.find((status) => status.id !== existingTask.statusId);
@@ -122,6 +127,7 @@ describe('test tasks CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: `${app.reverse('tasks')}?status=`,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -130,8 +136,8 @@ describe('test tasks CRUD', () => {
   });
 
   it('shows no tasks when the selected status has no tasks', async () => {
+    const cookies = await signIn();
     const existingTask = await models.task.query().first();
-
     const emptyStatus = await models.taskStatus.query().insert({
       name: 'Status without tasks',
     });
@@ -139,6 +145,7 @@ describe('test tasks CRUD', () => {
     const response = await app.inject({
       method: 'GET',
       url: `${app.reverse('tasks')}?status=${emptyStatus.id}`,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -147,11 +154,12 @@ describe('test tasks CRUD', () => {
   });
 
   it('keeps the selected status in the filter form', async () => {
+    const cookies = await signIn();
     const task = await models.task.query().first();
-
     const response = await app.inject({
       method: 'GET',
       url: `${app.reverse('tasks')}?status=${task.statusId}`,
+      cookies,
     });
 
     const statusSelect = response.body.match(
@@ -169,15 +177,25 @@ describe('test tasks CRUD', () => {
   });
 
   it('new', async () => {
-    const cookie = await signIn();
+    const cookies = await signIn();
 
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('newTask'),
-      cookies: cookie,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
+  });
+
+  it('redirects guests from the task list', async () => {
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('tasks'),
+    });
+
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe(app.reverse('root'));
   });
 
   it('cannot open new task page when unauthenticated', async () => {
@@ -190,7 +208,7 @@ describe('test tasks CRUD', () => {
   });
 
   it('create', async () => {
-    const cookie = await signIn();
+    const cookies = await signIn();
 
     const users = await models.user.query();
     const statuses = await models.taskStatus.query();
@@ -206,7 +224,7 @@ describe('test tasks CRUD', () => {
     const response = await app.inject({
       method: 'POST',
       url: app.reverse('tasks'),
-      cookies: cookie,
+      cookies,
       payload: {
         data: {
           ...params,
@@ -242,13 +260,13 @@ describe('test tasks CRUD', () => {
   });
 
   it('edit', async () => {
-    const cookie = await signIn();
+    const cookies = await signIn();
     const task = await models.task.query().first();
 
     const response = await app.inject({
       method: 'GET',
       url: `/tasks/${task.id}/edit`,
-      cookies: cookie,
+      cookies,
     });
 
     expect(response.statusCode).toBe(200);
@@ -266,7 +284,7 @@ describe('test tasks CRUD', () => {
   });
 
   it('update', async () => {
-    const cookie = await signIn();
+    const cookies = await signIn();
     const task = await models.task.query().first();
     const statuses = await models.taskStatus.query();
     const users = await models.user.query();
@@ -285,7 +303,7 @@ describe('test tasks CRUD', () => {
     const response = await app.inject({
       method: 'PATCH',
       url: `/tasks/${task.id}`,
-      cookies: cookie,
+      cookies,
       payload: {
         data: {
           ...params,
@@ -328,7 +346,7 @@ describe('test tasks CRUD', () => {
   });
 
   it('creator can delete task', async () => {
-    const cookie = await signIn();
+    const cookies = await signIn();
 
     const users = await models.user.query();
     const statuses = await models.taskStatus.query();
@@ -346,7 +364,7 @@ describe('test tasks CRUD', () => {
     const response = await app.inject({
       method: 'DELETE',
       url: `/tasks/${task.id}`,
-      cookies: cookie,
+      cookies,
     });
 
     expect(response.statusCode).toBe(302);
@@ -357,13 +375,13 @@ describe('test tasks CRUD', () => {
   });
 
   it('non-creator cannot delete task', async () => {
-    const cookie = await signIn();
+    const cookies = await signIn();
     const task = await models.task.query().first();
 
     const response = await app.inject({
       method: 'DELETE',
       url: `/tasks/${task.id}`,
-      cookies: cookie,
+      cookies,
     });
 
     expect(response.statusCode).toBe(302);
@@ -429,9 +447,11 @@ describe('test tasks CRUD', () => {
     });
 
     it('filters tasks by executor', async () => {
+      const cookies = await signIn();
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?executor=${currentUser.id}`,
+        cookies,
       });
 
       expect(response.statusCode).toBe(200);
@@ -442,9 +462,11 @@ describe('test tasks CRUD', () => {
     });
 
     it('combines status and executor filters', async () => {
+      const cookies = await signIn();
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?status=${firstStatus.id}&executor=${currentUser.id}`,
+        cookies,
       });
 
       expect(response.statusCode).toBe(200);
@@ -472,7 +494,6 @@ describe('test tasks CRUD', () => {
 
     it('combines status, executor and creator filters', async () => {
       const cookies = await signIn();
-
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?status=${secondStatus.id}&executor=${currentUser.id}&isCreatorUser=1`,
@@ -484,6 +505,36 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskNames.a);
       expect(response.body).not.toContain(taskNames.b);
       expect(response.body).not.toContain(taskNames.d);
+    });
+
+    it('combines status, executor, creator and label filters', async () => {
+      const cookies = await signIn();
+      const label = await models.label.query().first();
+      const tasks = await models.task.query();
+
+      for (const task of tasks) {
+        await task.$relatedQuery('labels').relate(label.id);
+      }
+
+      const taskWithoutLabel = await models.task.query().insert({
+        name: 'Matching task without the selected label',
+        statusId: secondStatus.id,
+        executorId: currentUser.id,
+        creatorId: currentUser.id,
+      });
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?status=${secondStatus.id}&executor=${currentUser.id}&isCreatorUser=1&label=${label.id}`,
+        cookies,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain(taskNames.c);
+      expect(response.body).not.toContain(taskNames.a);
+      expect(response.body).not.toContain(taskNames.b);
+      expect(response.body).not.toContain(taskNames.d);
+      expect(response.body).not.toContain(taskWithoutLabel.name);
     });
 
     it('shows all tasks when executor is empty and creator filter is absent', async () => {
@@ -544,9 +595,11 @@ describe('test tasks CRUD', () => {
     });
 
     it('filters tasks by label', async () => {
+      const cookies = await signIn();
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?label=${labelOne.id}`,
+        cookies,
       });
 
       expect(response.statusCode).toBe(200);
@@ -556,9 +609,11 @@ describe('test tasks CRUD', () => {
     });
 
     it('shows matching tasks without duplicates', async () => {
+      const cookies = await signIn();
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?label=${labelTwo.id}`,
+        cookies,
       });
 
       expect(response.statusCode).toBe(200);
@@ -568,9 +623,11 @@ describe('test tasks CRUD', () => {
     });
 
     it('includes unlabeled tasks without duplicating tasks when the filter is empty', async () => {
+      const cookies = await signIn();
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?label=`,
+        cookies,
       });
 
       expect(response.statusCode).toBe(200);
@@ -581,9 +638,11 @@ describe('test tasks CRUD', () => {
     });
 
     it('combines label and status filters', async () => {
+      const cookies = await signIn();
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?label=${labelTwo.id}&status=${taskA.statusId}`,
+        cookies,
       });
 
       expect(response.statusCode).toBe(200);
@@ -593,6 +652,7 @@ describe('test tasks CRUD', () => {
     });
 
     it('shows no tasks when the selected label has no tasks', async () => {
+      const cookies = await signIn();
       const unusedLabel = await models.label.query().insert({
         name: 'Unused filter label',
       });
@@ -600,6 +660,7 @@ describe('test tasks CRUD', () => {
       const response = await app.inject({
         method: 'GET',
         url: `${app.reverse('tasks')}?label=${unusedLabel.id}`,
+        cookies,
       });
 
       expect(response.statusCode).toBe(200);

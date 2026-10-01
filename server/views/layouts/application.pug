@@ -23,24 +23,21 @@ html(lang="es")
                 a.nav-link(href=route('users'))= t('layouts.application.users')
 
           ul.navbar-nav
-            li.nav-item
-              a.nav-link(href=route('statuses'))= t('layouts.application.statuses')
-
-            li.nav-item
-              a.nav-link(href=route('labels'))= t('layouts.application.labels')
-
-            li.nav-item
-              a.nav-link(href=route('tasks'))= t('layouts.application.tasks')
-          
             if isAuthenticated()
-              li.nav-item      
+              li.nav-item
+                a.nav-link(href=route('statuses'))= t('layouts.application.statuses')
+              li.nav-item
+                a.nav-link(href=route('labels'))= t('layouts.application.labels')
+              li.nav-item
+                a.nav-link(href=route('tasks'))= t('layouts.application.tasks')
+              li.nav-item
                 +buttonTo(
                   route('session'),
                   'DELETE',
                   'nav-link border-0 bg-transparent',
                   t('layouts.application.signOut')
                 )
-            else              
+            else
               li.nav-item
                 a.nav-link(href=route('newSession'))= t('layouts.application.signIn')
               li.nav-item
