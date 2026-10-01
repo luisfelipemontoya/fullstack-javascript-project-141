@@ -31,6 +31,22 @@ export default {
 
     flash: {
       ...en.translation.flash,
+      statuses: {
+        ...en.translation.flash.statuses,
+        create: {
+          ...en.translation.flash.statuses.create,
+          success: 'Estado creado con éxito',
+          error: 'No se pudo crear el estado',
+        },
+      },
+      labels: {
+        ...en.translation.flash.labels,
+        create: {
+          ...en.translation.flash.labels.create,
+          success: 'Etiqueta creada con éxito',
+          error: 'No se pudo crear la etiqueta',
+        },
+      },
       session: {
         ...en.translation.flash.session,
         create: {
@@ -51,14 +67,38 @@ export default {
           success: 'Usuario registrado con éxito',
           error: 'No se pudo registrar el usuario',
         },
+        update: {
+          ...en.translation.flash.users.update,
+          success: 'Usuario actualizado con éxito',
+        },
+        delete: {
+          ...en.translation.flash.users.delete,
+          success: 'Usuario eliminado con éxito',
+        },
       },
     },
 
     views: {
       ...en.translation.views,
 
+      tasks: {
+        ...en.translation.views.tasks,
+        new: {
+          ...en.translation.views.tasks.new,
+          header: 'Crear tarea',
+        },
+      },
+
       statuses: {
         ...en.translation.views.statuses,
+        edit: {
+          ...en.translation.views.statuses.edit,
+          action: 'Actualizar',
+        },
+        delete: {
+          ...en.translation.views.statuses.delete,
+          action: 'Eliminar',
+        },
         new: {
           ...en.translation.views.statuses.new,
           action: 'Crear estado',
@@ -68,6 +108,14 @@ export default {
 
       labels: {
         ...en.translation.views.labels,
+        edit: {
+          ...en.translation.views.labels.edit,
+          action: 'Actualizar',
+        },
+        delete: {
+          ...en.translation.views.labels.delete,
+          action: 'Eliminar',
+        },
         new: {
           ...en.translation.views.labels.new,
           action: 'Crear etiqueta',

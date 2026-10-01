@@ -16,8 +16,13 @@ export default (app) => {
       reply.render('users/new', { user, header });
     })
     .get('/users/:id/edit', { name: 'editUser' }, async (req, reply) => {
-      if (!req.isAuthenticated() || req.user.id !== Number(req.params.id)) {
+      if (!req.isAuthenticated()) {
         reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      if (req.user.id !== Number(req.params.id)) {
+        reply.redirect(app.reverse('users'));
         return reply;
       }
 
@@ -28,8 +33,13 @@ export default (app) => {
       return reply;
     })
     .patch('/users/:id', { name: 'user' }, async (req, reply) => {
-      if (!req.isAuthenticated() || req.user.id !== Number(req.params.id)) {
+      if (!req.isAuthenticated()) {
         reply.redirect(app.reverse('root'));
+        return reply;
+      }
+
+      if (req.user.id !== Number(req.params.id)) {
+        reply.redirect(app.reverse('users'));
         return reply;
       }
 
