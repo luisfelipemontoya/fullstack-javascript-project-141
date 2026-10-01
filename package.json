@@ -13,7 +13,7 @@
     "lint": "biome ci .",
     "lint:fix": "biome check --write .",
     "build": "webpack",
-    "start": "knex migrate:latest && fastify start server/plugin.js -l debug -P -o"
+    "start": "knex migrate:latest && node --import ./instrument.js ./node_modules/fastify-cli/cli.js start server/plugin.js -l debug -P -o"
   },
   "jest": {
     "modulePathIgnorePatterns": [
@@ -44,6 +44,7 @@
     "@fastify/static": "^10.1.2",
     "@fastify/view": "^12.0.0",
     "@hexlet/fastify-method-override": "git+https://github.com/hexlet-components/fastify-method-override.git",
+    "@sentry/node": "^11.1.0",
     "@vscode/sqlite3": "^5.1.2",
     "bootstrap": "^5.3.8",
     "fastify": "^5.8.2",
