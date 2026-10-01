@@ -7,11 +7,12 @@ export default (app) => {
     .get('/tasks', { name: 'tasks' }, async (req, reply) => {
       const status = req.query.status || '';
       const executor = req.query.executor || '';
+      const label = req.query.label || '';
       const isCreatorUser = req.isAuthenticated() && req.query.isCreatorUser === '1';
 
       const tasksQuery = app.objection.models.task
         .query()
-        .withGraphFetched('[status, creator, executor]');
+        .withGraphJoined('[status, creator, executor, labels]');
 
       if (status !== '') {
         tasksQuery.where('tasks.statusId', Number(status));
@@ -25,15 +26,21 @@ export default (app) => {
         tasksQuery.where('tasks.creatorId', req.user.id);
       }
 
+      if (label !== '') {
+        tasksQuery.where('labels.id', Number(label));
+      }
+
       const tasks = await tasksQuery;
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
+      const labels = await app.objection.models.label.query();
 
       reply.render('tasks/index', {
         tasks,
         statuses,
         users,
-        filters: { status, executor, isCreatorUser },
+        labels,
+        filters: { status, executor, isCreatorUser, label },
       });
 
       return reply;

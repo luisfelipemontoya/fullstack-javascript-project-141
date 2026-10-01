@@ -9,7 +9,7 @@ block content
       .row.g-3
         .col-md-4
           .input-group
-            label.input-group-text(for='status') Estado
+            label.input-group-text(for='status') State
             select.form-select(id='status', name='status')
               option(value='', selected=filters.status === '')
               each status in statuses
@@ -20,7 +20,7 @@ block content
 
         .col-md-4
           .input-group
-            label.input-group-text(for='executor') Ejecutor
+            label.input-group-text(for='executor') Executor
             select.form-select(id='executor', name='executor')
               option(value='', selected=filters.executor === '')
               each user in users
@@ -29,6 +29,17 @@ block content
                   selected=String(user.id) === filters.executor
                 )= `${user.firstName} ${user.lastName}`
                 
+        .col-md-4
+          .input-group
+            label.input-group-text(for='label') Label
+            select.form-select(id='label', name='label')
+              option(value='', selected=filters.label === '')
+              each label in labels
+                option(
+                  value=label.id
+                  selected=String(label.id) === filters.label
+                )= label.name    
+
       if isAuthenticated()
         .form-check.mt-3
           input.form-check-input(
@@ -38,11 +49,11 @@ block content
             value='1'
             checked=filters.isCreatorUser
           )
-          label.form-check-label(for='isCreatorUser') Solo mis tareas
+          label.form-check-label(for='isCreatorUser') Only my tasks
 
 
       .mt-3
-        button.btn.btn-primary(type='submit') Mostrar
+        button.btn.btn-primary(type='submit') Show
 
     table.table
       thead

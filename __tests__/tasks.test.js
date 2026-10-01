@@ -503,6 +503,113 @@ describe('test tasks CRUD', () => {
     });
   });
 
+  describe('label filter', () => {
+    let taskA;
+    let taskB;
+    let taskC;
+    let labelOne;
+    let labelTwo;
+
+    beforeEach(async () => {
+      await knex('tasks_labels').del();
+      await models.task.query().delete();
+
+      const users = await models.user.query();
+      const statuses = await models.taskStatus.query();
+      const labels = await models.label.query();
+
+      [labelOne, labelTwo] = labels;
+
+      taskA = await models.task.query().insert({
+        name: 'Label filter task A',
+        statusId: statuses[0].id,
+        creatorId: users[0].id,
+      });
+
+      taskB = await models.task.query().insert({
+        name: 'Label filter task B',
+        statusId: statuses[1].id,
+        creatorId: users[0].id,
+      });
+
+      taskC = await models.task.query().insert({
+        name: 'Label filter task C',
+        statusId: statuses[0].id,
+        creatorId: users[0].id,
+      });
+
+      await taskA.$relatedQuery('labels').relate(labelOne.id);
+      await taskA.$relatedQuery('labels').relate(labelTwo.id);
+      await taskB.$relatedQuery('labels').relate(labelTwo.id);
+    });
+
+    it('filters tasks by label', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?label=${labelOne.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain(taskA.name);
+      expect(response.body).not.toContain(taskB.name);
+      expect(response.body).not.toContain(taskC.name);
+    });
+
+    it('shows matching tasks without duplicates', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?label=${labelTwo.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body.split(taskA.name)).toHaveLength(2);
+      expect(response.body.split(taskB.name)).toHaveLength(2);
+      expect(response.body).not.toContain(taskC.name);
+    });
+
+    it('includes unlabeled tasks without duplicating tasks when the filter is empty', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?label=`,
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      for (const task of [taskA, taskB, taskC]) {
+        expect(response.body.split(task.name)).toHaveLength(2);
+      }
+    });
+
+    it('combines label and status filters', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?label=${labelTwo.id}&status=${taskA.statusId}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain(taskA.name);
+      expect(response.body).not.toContain(taskB.name);
+      expect(response.body).not.toContain(taskC.name);
+    });
+
+    it('shows no tasks when the selected label has no tasks', async () => {
+      const unusedLabel = await models.label.query().insert({
+        name: 'Unused filter label',
+      });
+
+      const response = await app.inject({
+        method: 'GET',
+        url: `${app.reverse('tasks')}?label=${unusedLabel.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      for (const task of [taskA, taskB, taskC]) {
+        expect(response.body).not.toContain(task.name);
+      }
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });
