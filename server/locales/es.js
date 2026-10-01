@@ -11,7 +11,7 @@ export default {
     fields: {
       firstName: 'Nombre',
       lastName: 'Apellido',
-      email: 'Email',
+      email: 'Correo electronico',
       password: 'Contraseña',
       name: 'Nombre',
     },
@@ -26,6 +26,17 @@ export default {
         signIn: 'Iniciar sesión',
         signUp: 'Registrarse',
         signOut: 'Cerrar sesión',
+      },
+    },
+
+    flash: {
+      ...en.translation.flash,
+      users: {
+        ...en.translation.flash.users,
+        create: {
+          ...en.translation.flash.users.create,
+          error: 'No se pudo registrar el usuario',
+        },
       },
     },
 
