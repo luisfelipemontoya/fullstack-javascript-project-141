@@ -31,11 +31,20 @@ export default {
 
     flash: {
       ...en.translation.flash,
+      session: {
+        ...en.translation.flash.session,
+        create: {
+          ...en.translation.flash.session.create,
+          success: 'Has iniciado sesión',
+          error: 'Correo electrónico o contraseña incorrectos',
+        },
+      },
       authError: '¡Acceso denegado! Por favor, inicia sesión.',
       users: {
         ...en.translation.flash.users,
         create: {
           ...en.translation.flash.users.create,
+          success: 'Usuario registrado con éxito',
           error: 'No se pudo registrar el usuario',
         },
       },
@@ -43,6 +52,22 @@ export default {
 
     views: {
       ...en.translation.views,
+
+      statuses: {
+        ...en.translation.views.statuses,
+        new: {
+          ...en.translation.views.statuses.new,
+          action: 'Crear estado',
+        },
+      },
+
+      labels: {
+        ...en.translation.views.labels,
+        new: {
+          ...en.translation.views.labels.new,
+          action: 'Crear etiqueta',
+        },
+      },
 
       session: {
         new: {
@@ -53,6 +78,15 @@ export default {
 
       users: {
         ...en.translation.views.users,
+
+        edit: {
+          ...en.translation.views.users.edit,
+          action: 'Actualizar',
+        },
+        delete: {
+          ...en.translation.views.users.delete,
+          action: 'Eliminar',
+        },
 
         new: {
           signUp: 'Registrarse',
