@@ -1,19 +1,19 @@
 // @ts-check
 
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { knexSnakeCaseMappers } from 'objection';
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { knexSnakeCaseMappers } from "objection";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const migrations = {
-  directory: path.join(__dirname, 'server', 'migrations'),
+  directory: path.join(__dirname, "server", "migrations"),
 };
 
 export const development = {
-  client: 'sqlite3',
+  client: "sqlite3",
   connection: {
-    filename: path.resolve(__dirname, 'database.sqlite'),
+    filename: path.resolve(__dirname, "database.sqlite"),
   },
   useNullAsDefault: true,
   migrations,
@@ -21,8 +21,8 @@ export const development = {
 };
 
 export const test = {
-  client: 'sqlite3',
-  connection: ':memory:',
+  client: "sqlite3",
+  connection: ":memory:",
   useNullAsDefault: true,
   // debug: true,
   migrations,
@@ -30,7 +30,7 @@ export const test = {
 };
 
 export const production = {
-  client: 'pg',
+  client: "pg",
   connection: {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },

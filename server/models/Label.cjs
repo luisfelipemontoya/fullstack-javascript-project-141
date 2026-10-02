@@ -1,19 +1,19 @@
 // @ts-check
 
-const BaseModel = require('./BaseModel.cjs');
+const BaseModel = require("./BaseModel.cjs");
 
 module.exports = class Label extends BaseModel {
   static get tableName() {
-    return 'labels';
+    return "labels";
   }
 
   static get jsonSchema() {
     return {
-      type: 'object',
-      required: ['name'],
+      type: "object",
+      required: ["name"],
       properties: {
-        id: { type: 'integer' },
-        name: { type: 'string', minLength: 1 },
+        id: { type: "integer" },
+        name: { type: "string", minLength: 1 },
       },
     };
   }
@@ -22,14 +22,14 @@ module.exports = class Label extends BaseModel {
     return {
       tasks: {
         relation: BaseModel.ManyToManyRelation,
-        modelClass: 'Task.cjs',
+        modelClass: "Task.cjs",
         join: {
-          from: 'labels.id',
+          from: "labels.id",
           through: {
-            from: 'tasks_labels.labelId',
-            to: 'tasks_labels.taskId',
+            from: "tasks_labels.labelId",
+            to: "tasks_labels.taskId",
           },
-          to: 'tasks.id',
+          to: "tasks.id",
         },
       },
     };
