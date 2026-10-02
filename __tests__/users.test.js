@@ -1,13 +1,13 @@
 // @ts-check
 
-import _ from 'lodash';
-import fastify from 'fastify';
+import _ from "lodash";
+import fastify from "fastify";
 
-import init from '../server/plugin.js';
-import encrypt from '../server/lib/secure.cjs';
-import { getTestData, prepareData } from './helpers/index.js';
+import init from "../server/plugin.js";
+import encrypt from "../server/lib/secure.cjs";
+import { getTestData, prepareData } from "./helpers/index.js";
 
-describe('test users CRUD', () => {
+describe("test users CRUD", () => {
   let app;
   let knex;
   let models;
@@ -15,8 +15,8 @@ describe('test users CRUD', () => {
 
   const signIn = async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('session'),
+      method: "POST",
+      url: app.reverse("session"),
       payload: {
         data: testData.users.existing,
       },
@@ -32,7 +32,7 @@ describe('test users CRUD', () => {
   beforeAll(async () => {
     app = fastify({
       exposeHeadRoutes: false,
-      logger: { target: 'pino-pretty' },
+      logger: { target: "pino-pretty" },
     });
     await init(app);
     knex = app.objection.knex;
@@ -46,38 +46,38 @@ describe('test users CRUD', () => {
   });
 
   beforeEach(async () => {
-    await knex('tasks_labels').del();
-    await knex('tasks').del();
-    await knex('labels').del();
-    await knex('task_statuses').del();
-    await knex('users').del();
+    await knex("tasks_labels").del();
+    await knex("tasks").del();
+    await knex("labels").del();
+    await knex("task_statuses").del();
+    await knex("users").del();
 
     await prepareData(app);
   });
 
-  it('index', async () => {
+  it("index", async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('users'),
+      method: "GET",
+      url: app.reverse("users"),
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('new', async () => {
+  it("new", async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('newUser'),
+      method: "GET",
+      url: app.reverse("newUser"),
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('create', async () => {
+  it("create", async () => {
     const params = testData.users.new;
     const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('users'),
+      method: "POST",
+      url: app.reverse("users"),
       payload: {
         data: params,
       },
@@ -85,20 +85,20 @@ describe('test users CRUD', () => {
 
     expect(response.statusCode).toBe(302);
     const expected = {
-      ..._.omit(params, 'password'),
+      ..._.omit(params, "password"),
       passwordDigest: encrypt(params.password),
     };
     const user = await models.user.query().findOne({ email: params.email });
     expect(user).toMatchObject(expected);
   });
 
-  it('edit', async () => {
+  it("edit", async () => {
     const user = await models.user.query().findOne({ email: testData.users.existing.email });
 
     const cookie = await signIn();
 
     const response = await app.inject({
-      method: 'GET',
+      method: "GET",
       url: `/users/${user.id}/edit`,
       cookies: cookie,
     });
@@ -106,15 +106,15 @@ describe('test users CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('cannot edit another user', async () => {
+  it("cannot edit another user", async () => {
     const currentUser = await models.user.query().findOne({ email: testData.users.existing.email });
 
-    const anotherUser = await models.user.query().whereNot('id', currentUser.id).first();
+    const anotherUser = await models.user.query().whereNot("id", currentUser.id).first();
 
     const cookie = await signIn();
 
     const response = await app.inject({
-      method: 'GET',
+      method: "GET",
       url: `/users/${anotherUser.id}/edit`,
       cookies: cookie,
     });
@@ -122,7 +122,7 @@ describe('test users CRUD', () => {
     expect(response.statusCode).toBe(302);
   });
 
-  it('update', async () => {
+  it("update", async () => {
     const user = await models.user.query().findOne({
       email: testData.users.existing.email,
     });
@@ -131,7 +131,7 @@ describe('test users CRUD', () => {
     const params = testData.users.updated;
 
     const response = await app.inject({
-      method: 'PATCH',
+      method: "PATCH",
       url: `/users/${user.id}`,
       cookies: cookie,
       payload: {
@@ -144,14 +144,14 @@ describe('test users CRUD', () => {
     const updatedUser = await models.user.query().findById(user.id);
 
     const expected = {
-      ..._.omit(params, 'password'),
+      ..._.omit(params, "password"),
       passwordDigest: encrypt(params.password),
     };
 
     expect(updatedUser).toMatchObject(expected);
   });
 
-  it('delete', async () => {
+  it("delete", async () => {
     const user = await models.user.query().findOne({
       email: testData.users.existing.email,
     });
@@ -159,7 +159,7 @@ describe('test users CRUD', () => {
     const cookie = await signIn();
 
     const response = await app.inject({
-      method: 'DELETE',
+      method: "DELETE",
       url: `/users/${user.id}`,
       cookies: cookie,
     });
@@ -171,17 +171,17 @@ describe('test users CRUD', () => {
     expect(deletedUser).toBeUndefined();
   });
 
-  it('cannot delete another user', async () => {
+  it("cannot delete another user", async () => {
     const currentUser = await models.user.query().findOne({
       email: testData.users.existing.email,
     });
 
-    const anotherUser = await models.user.query().whereNot('id', currentUser.id).first();
+    const anotherUser = await models.user.query().whereNot("id", currentUser.id).first();
 
     const cookie = await signIn();
 
     const response = await app.inject({
-      method: 'DELETE',
+      method: "DELETE",
       url: `/users/${anotherUser.id}`,
       cookies: cookie,
     });
@@ -192,7 +192,7 @@ describe('test users CRUD', () => {
 
     expect(existingUser).toBeDefined();
   });
-  it('cannot delete user associated with a task', async () => {
+  it("cannot delete user associated with a task", async () => {
     const cookie = await signIn();
 
     const users = await models.user.query();
@@ -200,15 +200,15 @@ describe('test users CRUD', () => {
     const user = users[0];
 
     await models.task.query().insert({
-      name: 'Task with user',
-      description: 'Task used to test user restriction',
+      name: "Task with user",
+      description: "Task used to test user restriction",
       statusId: statuses[0].id,
       creatorId: user.id,
       executorId: null,
     });
 
     const response = await app.inject({
-      method: 'DELETE',
+      method: "DELETE",
       url: `/users/${user.id}`,
       cookies: cookie,
     });

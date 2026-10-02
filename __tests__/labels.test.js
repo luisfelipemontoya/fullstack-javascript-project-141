@@ -1,10 +1,10 @@
 // @ts-check
 
-import fastify from 'fastify';
-import init from '../server/plugin.js';
-import { getTestData, prepareData } from './helpers/index.js';
+import fastify from "fastify";
+import init from "../server/plugin.js";
+import { getTestData, prepareData } from "./helpers/index.js";
 
-describe('test labels CRUD', () => {
+describe("test labels CRUD", () => {
   let app;
   let knex;
   let models;
@@ -13,8 +13,8 @@ describe('test labels CRUD', () => {
 
   const signIn = async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('session'),
+      method: "POST",
+      url: app.reverse("session"),
       payload: {
         data: testData.users.existing,
       },
@@ -30,7 +30,7 @@ describe('test labels CRUD', () => {
   beforeAll(async () => {
     app = fastify({
       exposeHeadRoutes: false,
-      logger: { target: 'pino-pretty' },
+      logger: { target: "pino-pretty" },
     });
 
     await init(app);
@@ -42,43 +42,43 @@ describe('test labels CRUD', () => {
   });
 
   beforeEach(async () => {
-    await knex('tasks_labels').del();
-    await knex('tasks').del();
-    await knex('labels').del();
-    await knex('task_statuses').del();
-    await knex('users').del();
+    await knex("tasks_labels").del();
+    await knex("tasks").del();
+    await knex("labels").del();
+    await knex("task_statuses").del();
+    await knex("users").del();
 
     await prepareData(app);
   });
 
-  it('index', async () => {
+  it("index", async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('labels'),
+      method: "GET",
+      url: app.reverse("labels"),
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('new', async () => {
+  it("new", async () => {
     const cookie = await signIn();
 
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('newLabel'),
+      method: "GET",
+      url: app.reverse("newLabel"),
       cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('create', async () => {
+  it("create", async () => {
     const cookie = await signIn();
     const params = testData.labels.new;
 
     const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('labels'),
+      method: "POST",
+      url: app.reverse("labels"),
       cookies: cookie,
       payload: {
         data: params,
@@ -94,39 +94,39 @@ describe('test labels CRUD', () => {
     expect(label).toMatchObject(params);
   });
 
-  it('edit', async () => {
+  it("edit", async () => {
     const cookie = await signIn();
     const label = await models.label.query().first();
 
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('editLabel', { id: label.id }),
+      method: "GET",
+      url: app.reverse("editLabel", { id: label.id }),
       cookies: cookie,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('cannot edit when unauthenticated', async () => {
+  it("cannot edit when unauthenticated", async () => {
     const label = await models.label.query().first();
 
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('editLabel', { id: label.id }),
+      method: "GET",
+      url: app.reverse("editLabel", { id: label.id }),
     });
 
     expect(response.statusCode).toBe(302);
   });
 
-  it('update', async () => {
+  it("update", async () => {
     const cookie = await signIn();
     const label = await models.label.query().first();
 
     const params = testData.labels.updated;
 
     const response = await app.inject({
-      method: 'PATCH',
-      url: app.reverse('label', { id: label.id }),
+      method: "PATCH",
+      url: app.reverse("label", { id: label.id }),
       cookies: cookie,
       payload: {
         data: params,
@@ -140,13 +140,13 @@ describe('test labels CRUD', () => {
     expect(updatedLabel).toMatchObject(params);
   });
 
-  it('delete', async () => {
+  it("delete", async () => {
     const cookie = await signIn();
     const label = await models.label.query().first();
 
     const response = await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteLabel', { id: label.id }),
+      method: "DELETE",
+      url: app.reverse("deleteLabel", { id: label.id }),
       cookies: cookie,
     });
 
@@ -157,7 +157,7 @@ describe('test labels CRUD', () => {
     expect(deletedLabel).toBeUndefined();
   });
 
-  it('cannot delete label associated with task', async () => {
+  it("cannot delete label associated with task", async () => {
     const cookie = await signIn();
 
     const label = await models.label.query().first();
@@ -165,18 +165,18 @@ describe('test labels CRUD', () => {
     const statuses = await models.taskStatus.query();
 
     const task = await models.task.query().insert({
-      name: 'Task with label',
-      description: 'Task associated with a label',
+      name: "Task with label",
+      description: "Task associated with a label",
       statusId: statuses[0].id,
       creatorId: users[0].id,
       executorId: users[1].id,
     });
 
-    await task.$relatedQuery('labels').relate(label.id);
+    await task.$relatedQuery("labels").relate(label.id);
 
     const response = await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteLabel', { id: label.id }),
+      method: "DELETE",
+      url: app.reverse("deleteLabel", { id: label.id }),
       cookies: cookie,
     });
 
@@ -187,12 +187,12 @@ describe('test labels CRUD', () => {
     expect(existingLabel).toBeDefined();
   });
 
-  it('cannot delete when unauthenticated', async () => {
+  it("cannot delete when unauthenticated", async () => {
     const label = await models.label.query().first();
 
     const response = await app.inject({
-      method: 'DELETE',
-      url: app.reverse('deleteLabel', { id: label.id }),
+      method: "DELETE",
+      url: app.reverse("deleteLabel", { id: label.id }),
     });
 
     expect(response.statusCode).toBe(302);

@@ -1,11 +1,11 @@
 // @ts-check
 
-import { faker } from '@faker-js/faker';
-import fastify from 'fastify';
-import init from '../server/plugin.js';
-import { getTestData, prepareData } from './helpers/index.js';
+import { faker } from "@faker-js/faker";
+import fastify from "fastify";
+import init from "../server/plugin.js";
+import { getTestData, prepareData } from "./helpers/index.js";
 
-describe('test tasks CRUD', () => {
+describe("test tasks CRUD", () => {
   let app;
   let knex;
   let models;
@@ -14,8 +14,8 @@ describe('test tasks CRUD', () => {
 
   const signIn = async () => {
     const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('session'),
+      method: "POST",
+      url: app.reverse("session"),
       payload: {
         data: testData.users.existing,
       },
@@ -31,7 +31,7 @@ describe('test tasks CRUD', () => {
   beforeAll(async () => {
     app = fastify({
       exposeHeadRoutes: false,
-      logger: { target: 'pino-pretty' },
+      logger: { target: "pino-pretty" },
     });
 
     await init(app);
@@ -43,11 +43,11 @@ describe('test tasks CRUD', () => {
   });
 
   beforeEach(async () => {
-    await knex('tasks_labels').del();
-    await knex('tasks').del();
-    await knex('labels').del();
-    await knex('task_statuses').del();
-    await knex('users').del();
+    await knex("tasks_labels").del();
+    await knex("tasks").del();
+    await knex("labels").del();
+    await knex("task_statuses").del();
+    await knex("users").del();
 
     await prepareData(app);
 
@@ -55,40 +55,40 @@ describe('test tasks CRUD', () => {
     const statuses = await models.taskStatus.query();
 
     await models.task.query().insert({
-      name: 'Implement authentication',
-      description: 'Add authentication to the application',
+      name: "Implement authentication",
+      description: "Add authentication to the application",
       statusId: statuses[0].id,
       creatorId: users[0].id,
       executorId: users[1].id,
     });
   });
 
-  it('task has many labels', async () => {
+  it("task has many labels", async () => {
     const task = await models.task.query().first();
     const labels = await models.label.query();
 
-    await task.$relatedQuery('labels').relate(labels[0].id);
-    await task.$relatedQuery('labels').relate(labels[1].id);
+    await task.$relatedQuery("labels").relate(labels[0].id);
+    await task.$relatedQuery("labels").relate(labels[1].id);
 
-    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched('labels');
+    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched("labels");
 
     expect(taskWithLabels.labels).toHaveLength(2);
-    expect(taskWithLabels.labels[0].name).toBe('bug');
-    expect(taskWithLabels.labels[1].name).toBe('feature');
+    expect(taskWithLabels.labels[0].name).toBe("bug");
+    expect(taskWithLabels.labels[1].name).toBe("feature");
   });
 
-  it('index', async () => {
+  it("index", async () => {
     const cookies = await signIn();
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('tasks'),
+      method: "GET",
+      url: app.reverse("tasks"),
       cookies,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('filters tasks by status', async () => {
+  it("filters tasks by status", async () => {
     const cookies = await signIn();
     const existingTask = await models.task.query().first();
     const statuses = await models.taskStatus.query();
@@ -96,14 +96,14 @@ describe('test tasks CRUD', () => {
     const otherStatus = statuses.find((status) => status.id !== existingTask.statusId);
 
     const otherTask = await models.task.query().insert({
-      name: 'Task belonging to another status',
+      name: "Task belonging to another status",
       statusId: otherStatus.id,
       creatorId: existingTask.creatorId,
     });
 
     const response = await app.inject({
-      method: 'GET',
-      url: `${app.reverse('tasks')}?status=${otherStatus.id}`,
+      method: "GET",
+      url: `${app.reverse("tasks")}?status=${otherStatus.id}`,
       cookies,
     });
 
@@ -112,21 +112,21 @@ describe('test tasks CRUD', () => {
     expect(response.body).not.toContain(existingTask.name);
   });
 
-  it('shows all tasks when the status filter is empty', async () => {
+  it("shows all tasks when the status filter is empty", async () => {
     const cookies = await signIn();
     const existingTask = await models.task.query().first();
     const statuses = await models.taskStatus.query();
     const otherStatus = statuses.find((status) => status.id !== existingTask.statusId);
 
     const otherTask = await models.task.query().insert({
-      name: 'Task with a different status',
+      name: "Task with a different status",
       statusId: otherStatus.id,
       creatorId: existingTask.creatorId,
     });
 
     const response = await app.inject({
-      method: 'GET',
-      url: `${app.reverse('tasks')}?status=`,
+      method: "GET",
+      url: `${app.reverse("tasks")}?status=`,
       cookies,
     });
 
@@ -135,30 +135,30 @@ describe('test tasks CRUD', () => {
     expect(response.body).toContain(otherTask.name);
   });
 
-  it('shows no tasks when the selected status has no tasks', async () => {
+  it("shows no tasks when the selected status has no tasks", async () => {
     const cookies = await signIn();
     const existingTask = await models.task.query().first();
     const emptyStatus = await models.taskStatus.query().insert({
-      name: 'Status without tasks',
+      name: "Status without tasks",
     });
 
     const response = await app.inject({
-      method: 'GET',
-      url: `${app.reverse('tasks')}?status=${emptyStatus.id}`,
+      method: "GET",
+      url: `${app.reverse("tasks")}?status=${emptyStatus.id}`,
       cookies,
     });
 
     expect(response.statusCode).toBe(200);
     expect(response.body).not.toContain(existingTask.name);
-    expect(response.body).not.toContain(`href="${app.reverse('task', { id: existingTask.id })}"`);
+    expect(response.body).not.toContain(`href="${app.reverse("task", { id: existingTask.id })}"`);
   });
 
-  it('keeps the selected status in the filter form', async () => {
+  it("keeps the selected status in the filter form", async () => {
     const cookies = await signIn();
     const task = await models.task.query().first();
     const response = await app.inject({
-      method: 'GET',
-      url: `${app.reverse('tasks')}?status=${task.statusId}`,
+      method: "GET",
+      url: `${app.reverse("tasks")}?status=${task.statusId}`,
       cookies,
     });
 
@@ -176,38 +176,38 @@ describe('test tasks CRUD', () => {
     expect(statusSelect[1]).toMatch(selectedOption);
   });
 
-  it('new', async () => {
+  it("new", async () => {
     const cookies = await signIn();
 
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('newTask'),
+      method: "GET",
+      url: app.reverse("newTask"),
       cookies,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('redirects guests from the task list', async () => {
+  it("redirects guests from the task list", async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('tasks'),
+      method: "GET",
+      url: app.reverse("tasks"),
     });
 
     expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe(app.reverse('root'));
+    expect(response.headers.location).toBe(app.reverse("root"));
   });
 
-  it('cannot open new task page when unauthenticated', async () => {
+  it("cannot open new task page when unauthenticated", async () => {
     const response = await app.inject({
-      method: 'GET',
-      url: app.reverse('newTask'),
+      method: "GET",
+      url: app.reverse("newTask"),
     });
 
     expect(response.statusCode).toBe(302);
   });
 
-  it('create', async () => {
+  it("create", async () => {
     const cookies = await signIn();
 
     const users = await models.user.query();
@@ -222,8 +222,8 @@ describe('test tasks CRUD', () => {
     };
 
     const response = await app.inject({
-      method: 'POST',
-      url: app.reverse('tasks'),
+      method: "POST",
+      url: app.reverse("tasks"),
       cookies,
       payload: {
         data: {
@@ -242,29 +242,29 @@ describe('test tasks CRUD', () => {
     expect(task).toMatchObject(params);
     expect(task.creatorId).toBeDefined();
 
-    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched('labels');
+    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched("labels");
 
     expect(taskWithLabels.labels).toHaveLength(2);
     expect(taskWithLabels.labels.map((label) => label.id)).toEqual([labels[0].id, labels[1].id]);
   });
 
-  it('show', async () => {
+  it("show", async () => {
     const task = await models.task.query().first();
 
     const response = await app.inject({
-      method: 'GET',
+      method: "GET",
       url: `/tasks/${task.id}`,
     });
 
     expect(response.statusCode).toBe(200);
   });
 
-  it('edit', async () => {
+  it("edit", async () => {
     const cookies = await signIn();
     const task = await models.task.query().first();
 
     const response = await app.inject({
-      method: 'GET',
+      method: "GET",
       url: `/tasks/${task.id}/edit`,
       cookies,
     });
@@ -272,26 +272,26 @@ describe('test tasks CRUD', () => {
     expect(response.statusCode).toBe(200);
   });
 
-  it('cannot edit task when unauthenticated', async () => {
+  it("cannot edit task when unauthenticated", async () => {
     const task = await models.task.query().first();
 
     const response = await app.inject({
-      method: 'GET',
+      method: "GET",
       url: `/tasks/${task.id}/edit`,
     });
 
     expect(response.statusCode).toBe(302);
   });
 
-  it('update', async () => {
+  it("update", async () => {
     const cookies = await signIn();
     const task = await models.task.query().first();
     const statuses = await models.taskStatus.query();
     const users = await models.user.query();
     const labels = await models.label.query();
 
-    await task.$relatedQuery('labels').relate(labels[0].id);
-    await task.$relatedQuery('labels').relate(labels[1].id);
+    await task.$relatedQuery("labels").relate(labels[0].id);
+    await task.$relatedQuery("labels").relate(labels[1].id);
 
     const params = {
       name: faker.lorem.words(3),
@@ -301,7 +301,7 @@ describe('test tasks CRUD', () => {
     };
 
     const response = await app.inject({
-      method: 'PATCH',
+      method: "PATCH",
       url: `/tasks/${task.id}`,
       cookies,
       payload: {
@@ -319,21 +319,21 @@ describe('test tasks CRUD', () => {
     expect(updatedTask).toMatchObject(params);
     expect(updatedTask.creatorId).toBe(task.creatorId);
 
-    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched('labels');
+    const taskWithLabels = await models.task.query().findById(task.id).withGraphFetched("labels");
 
     expect(taskWithLabels.labels).toHaveLength(1);
     expect(taskWithLabels.labels[0].id).toBe(labels[2].id);
   });
 
-  it('cannot update task when unauthenticated', async () => {
+  it("cannot update task when unauthenticated", async () => {
     const task = await models.task.query().first();
 
     const response = await app.inject({
-      method: 'PATCH',
+      method: "PATCH",
       url: `/tasks/${task.id}`,
       payload: {
         data: {
-          name: 'Unauthorized update',
+          name: "Unauthorized update",
         },
       },
     });
@@ -345,7 +345,7 @@ describe('test tasks CRUD', () => {
     expect(unchangedTask.name).toBe(task.name);
   });
 
-  it('creator can delete task', async () => {
+  it("creator can delete task", async () => {
     const cookies = await signIn();
 
     const users = await models.user.query();
@@ -354,15 +354,15 @@ describe('test tasks CRUD', () => {
     const creator = users.find((user) => user.email === testData.users.existing.email);
 
     const task = await models.task.query().insert({
-      name: 'Task to delete',
-      description: 'Created by authenticated user',
+      name: "Task to delete",
+      description: "Created by authenticated user",
       statusId: statuses[0].id,
       creatorId: creator.id,
       executorId: null,
     });
 
     const response = await app.inject({
-      method: 'DELETE',
+      method: "DELETE",
       url: `/tasks/${task.id}`,
       cookies,
     });
@@ -374,12 +374,12 @@ describe('test tasks CRUD', () => {
     expect(deletedTask).toBeUndefined();
   });
 
-  it('non-creator cannot delete task', async () => {
+  it("non-creator cannot delete task", async () => {
     const cookies = await signIn();
     const task = await models.task.query().first();
 
     const response = await app.inject({
-      method: 'DELETE',
+      method: "DELETE",
       url: `/tasks/${task.id}`,
       cookies,
     });
@@ -391,17 +391,17 @@ describe('test tasks CRUD', () => {
     expect(existingTask).toBeDefined();
   });
 
-  describe('executor and creator filters', () => {
+  describe("executor and creator filters", () => {
     let currentUser;
     let otherUser;
     let firstStatus;
     let secondStatus;
 
     const taskNames = {
-      a: 'Filter task A',
-      b: 'Filter task B',
-      c: 'Filter task C',
-      d: 'Filter task D',
+      a: "Filter task A",
+      b: "Filter task B",
+      c: "Filter task C",
+      d: "Filter task D",
     };
 
     beforeEach(async () => {
@@ -446,11 +446,11 @@ describe('test tasks CRUD', () => {
       }
     });
 
-    it('filters tasks by executor', async () => {
+    it("filters tasks by executor", async () => {
       const cookies = await signIn();
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?executor=${currentUser.id}`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?executor=${currentUser.id}`,
         cookies,
       });
 
@@ -461,11 +461,11 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskNames.d);
     });
 
-    it('combines status and executor filters', async () => {
+    it("combines status and executor filters", async () => {
       const cookies = await signIn();
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?status=${firstStatus.id}&executor=${currentUser.id}`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?status=${firstStatus.id}&executor=${currentUser.id}`,
         cookies,
       });
 
@@ -476,12 +476,12 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskNames.d);
     });
 
-    it('filters by the current user as creator, not executor', async () => {
+    it("filters by the current user as creator, not executor", async () => {
       const cookies = await signIn();
 
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?isCreatorUser=1`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?isCreatorUser=1`,
         cookies,
       });
 
@@ -492,11 +492,11 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskNames.d);
     });
 
-    it('combines status, executor and creator filters', async () => {
+    it("combines status, executor and creator filters", async () => {
       const cookies = await signIn();
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?status=${secondStatus.id}&executor=${currentUser.id}&isCreatorUser=1`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?status=${secondStatus.id}&executor=${currentUser.id}&isCreatorUser=1`,
         cookies,
       });
 
@@ -507,25 +507,25 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskNames.d);
     });
 
-    it('combines status, executor, creator and label filters', async () => {
+    it("combines status, executor, creator and label filters", async () => {
       const cookies = await signIn();
       const label = await models.label.query().first();
       const tasks = await models.task.query();
 
       for (const task of tasks) {
-        await task.$relatedQuery('labels').relate(label.id);
+        await task.$relatedQuery("labels").relate(label.id);
       }
 
       const taskWithoutLabel = await models.task.query().insert({
-        name: 'Matching task without the selected label',
+        name: "Matching task without the selected label",
         statusId: secondStatus.id,
         executorId: currentUser.id,
         creatorId: currentUser.id,
       });
 
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?status=${secondStatus.id}&executor=${currentUser.id}&isCreatorUser=1&label=${label.id}`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?status=${secondStatus.id}&executor=${currentUser.id}&isCreatorUser=1&label=${label.id}`,
         cookies,
       });
 
@@ -537,12 +537,12 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskWithoutLabel.name);
     });
 
-    it('shows all tasks when executor is empty and creator filter is absent', async () => {
+    it("shows all tasks when executor is empty and creator filter is absent", async () => {
       const cookies = await signIn();
 
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?executor=`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?executor=`,
         cookies,
       });
 
@@ -554,7 +554,7 @@ describe('test tasks CRUD', () => {
     });
   });
 
-  describe('label filter', () => {
+  describe("label filter", () => {
     let taskA;
     let taskB;
     let taskC;
@@ -562,7 +562,7 @@ describe('test tasks CRUD', () => {
     let labelTwo;
 
     beforeEach(async () => {
-      await knex('tasks_labels').del();
+      await knex("tasks_labels").del();
       await models.task.query().delete();
 
       const users = await models.user.query();
@@ -572,33 +572,33 @@ describe('test tasks CRUD', () => {
       [labelOne, labelTwo] = labels;
 
       taskA = await models.task.query().insert({
-        name: 'Label filter task A',
+        name: "Label filter task A",
         statusId: statuses[0].id,
         creatorId: users[0].id,
       });
 
       taskB = await models.task.query().insert({
-        name: 'Label filter task B',
+        name: "Label filter task B",
         statusId: statuses[1].id,
         creatorId: users[0].id,
       });
 
       taskC = await models.task.query().insert({
-        name: 'Label filter task C',
+        name: "Label filter task C",
         statusId: statuses[0].id,
         creatorId: users[0].id,
       });
 
-      await taskA.$relatedQuery('labels').relate(labelOne.id);
-      await taskA.$relatedQuery('labels').relate(labelTwo.id);
-      await taskB.$relatedQuery('labels').relate(labelTwo.id);
+      await taskA.$relatedQuery("labels").relate(labelOne.id);
+      await taskA.$relatedQuery("labels").relate(labelTwo.id);
+      await taskB.$relatedQuery("labels").relate(labelTwo.id);
     });
 
-    it('filters tasks by label', async () => {
+    it("filters tasks by label", async () => {
       const cookies = await signIn();
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?label=${labelOne.id}`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?label=${labelOne.id}`,
         cookies,
       });
 
@@ -608,11 +608,11 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskC.name);
     });
 
-    it('shows matching tasks without duplicates', async () => {
+    it("shows matching tasks without duplicates", async () => {
       const cookies = await signIn();
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?label=${labelTwo.id}`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?label=${labelTwo.id}`,
         cookies,
       });
 
@@ -622,11 +622,11 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskC.name);
     });
 
-    it('includes unlabeled tasks without duplicating tasks when the filter is empty', async () => {
+    it("includes unlabeled tasks without duplicating tasks when the filter is empty", async () => {
       const cookies = await signIn();
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?label=`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?label=`,
         cookies,
       });
 
@@ -637,11 +637,11 @@ describe('test tasks CRUD', () => {
       }
     });
 
-    it('combines label and status filters', async () => {
+    it("combines label and status filters", async () => {
       const cookies = await signIn();
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?label=${labelTwo.id}&status=${taskA.statusId}`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?label=${labelTwo.id}&status=${taskA.statusId}`,
         cookies,
       });
 
@@ -651,15 +651,15 @@ describe('test tasks CRUD', () => {
       expect(response.body).not.toContain(taskC.name);
     });
 
-    it('shows no tasks when the selected label has no tasks', async () => {
+    it("shows no tasks when the selected label has no tasks", async () => {
       const cookies = await signIn();
       const unusedLabel = await models.label.query().insert({
-        name: 'Unused filter label',
+        name: "Unused filter label",
       });
 
       const response = await app.inject({
-        method: 'GET',
-        url: `${app.reverse('tasks')}?label=${unusedLabel.id}`,
+        method: "GET",
+        url: `${app.reverse("tasks")}?label=${unusedLabel.id}`,
         cookies,
       });
 
