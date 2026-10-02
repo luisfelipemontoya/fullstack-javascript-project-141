@@ -31,8 +31,19 @@ export default {
 
     flash: {
       ...en.translation.flash,
+      tasks: {
+        ...en.translation.flash.tasks,
+        create: {
+          ...en.translation.flash.tasks.create,
+          error: 'No se pudo crear la tarea',
+        },
+      },
       statuses: {
         ...en.translation.flash.statuses,
+        update: {
+          ...en.translation.flash.statuses.update,
+          success: 'Estado actualizado con éxito',
+        },
         create: {
           ...en.translation.flash.statuses.create,
           success: 'Estado creado con éxito',
@@ -45,6 +56,10 @@ export default {
       },
       labels: {
         ...en.translation.flash.labels,
+        update: {
+          ...en.translation.flash.labels.update,
+          success: 'Etiqueta actualizada con éxito',
+        },
         create: {
           ...en.translation.flash.labels.create,
           success: 'Etiqueta creada con éxito',
@@ -93,6 +108,7 @@ export default {
       tasks: {
         ...en.translation.views.tasks,
         name: 'Nombre',
+        description: 'Descripción',
         new: {
           ...en.translation.views.tasks.new,
           header: 'Crear tarea',
