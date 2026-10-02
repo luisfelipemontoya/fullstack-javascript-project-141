@@ -1,39 +1,39 @@
 // @ts-check
 
-import i18next from 'i18next';
+import i18next from "i18next";
 
 export default (app) => {
   app
-    .get('/tasks', { name: 'tasks' }, async (req, reply) => {
-      const status = req.query.status || '';
-      const executor = req.query.executor || '';
-      const label = req.query.label || '';
-      const isCreatorUser = req.isAuthenticated() && req.query.isCreatorUser === '1';
+    .get("/tasks", { name: "tasks" }, async (req, reply) => {
+      const status = req.query.status || "";
+      const executor = req.query.executor || "";
+      const label = req.query.label || "";
+      const isCreatorUser = req.isAuthenticated() && req.query.isCreatorUser === "1";
 
       if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('root'));
+        req.flash("error", i18next.t("flash.authError"));
+        reply.redirect(app.reverse("root"));
         return reply;
       }
 
       const tasksQuery = app.objection.models.task
         .query()
-        .withGraphJoined('[status, creator, executor, labels]');
+        .withGraphJoined("[status, creator, executor, labels]");
 
-      if (status !== '') {
-        tasksQuery.where('tasks.statusId', Number(status));
+      if (status !== "") {
+        tasksQuery.where("tasks.statusId", Number(status));
       }
 
-      if (executor !== '') {
-        tasksQuery.where('tasks.executorId', Number(executor));
+      if (executor !== "") {
+        tasksQuery.where("tasks.executorId", Number(executor));
       }
 
       if (isCreatorUser) {
-        tasksQuery.where('tasks.creatorId', req.user.id);
+        tasksQuery.where("tasks.creatorId", req.user.id);
       }
 
-      if (label !== '') {
-        tasksQuery.where('labels.id', Number(label));
+      if (label !== "") {
+        tasksQuery.where("labels.id", Number(label));
       }
 
       const tasks = await tasksQuery;
@@ -41,7 +41,7 @@ export default (app) => {
       const users = await app.objection.models.user.query();
       const labels = await app.objection.models.label.query();
 
-      reply.render('tasks/index', {
+      reply.render("tasks/index", {
         tasks,
         statuses,
         users,
@@ -52,10 +52,10 @@ export default (app) => {
       return reply;
     })
 
-    .get('/tasks/new', { name: 'newTask' }, async (req, reply) => {
+    .get("/tasks/new", { name: "newTask" }, async (req, reply) => {
       if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('root'));
+        req.flash("error", i18next.t("flash.authError"));
+        reply.redirect(app.reverse("root"));
         return reply;
       }
 
@@ -65,9 +65,9 @@ export default (app) => {
       const users = await app.objection.models.user.query();
       const labels = await app.objection.models.label.query();
 
-      const header = i18next.t('views.tasks.new.header');
+      const header = i18next.t("views.tasks.new.header");
 
-      reply.render('tasks/new', {
+      reply.render("tasks/new", {
         task,
         statuses,
         users,
@@ -78,36 +78,36 @@ export default (app) => {
       return reply;
     })
 
-    .get('/tasks/:id', { name: 'task' }, async (req, reply) => {
+    .get("/tasks/:id", { name: "task" }, async (req, reply) => {
       const task = await app.objection.models.task
         .query()
         .findById(req.params.id)
-        .withGraphFetched('[status, creator, executor, labels]');
+        .withGraphFetched("[status, creator, executor, labels]");
 
-      reply.render('tasks/show', { task });
+      reply.render("tasks/show", { task });
 
       return reply;
     })
 
-    .get('/tasks/:id/edit', { name: 'editTask' }, async (req, reply) => {
+    .get("/tasks/:id/edit", { name: "editTask" }, async (req, reply) => {
       if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('root'));
+        req.flash("error", i18next.t("flash.authError"));
+        reply.redirect(app.reverse("root"));
         return reply;
       }
 
       const task = await app.objection.models.task
         .query()
         .findById(req.params.id)
-        .withGraphFetched('labels');
+        .withGraphFetched("labels");
 
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
       const labels = await app.objection.models.label.query();
 
-      const header = i18next.t('views.tasks.edit.header');
+      const header = i18next.t("views.tasks.edit.header");
 
-      reply.render('tasks/edit', {
+      reply.render("tasks/edit", {
         task,
         statuses,
         users,
@@ -117,10 +117,10 @@ export default (app) => {
 
       return reply;
     })
-    .patch('/tasks/:id', async (req, reply) => {
+    .patch("/tasks/:id", async (req, reply) => {
       if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('root'));
+        req.flash("error", i18next.t("flash.authError"));
+        reply.redirect(app.reverse("root"));
         return reply;
       }
 
@@ -140,23 +140,23 @@ export default (app) => {
       try {
         await task.$query().patch(taskData);
 
-        await task.$relatedQuery('labels').unrelate();
+        await task.$relatedQuery("labels").unrelate();
 
         for (const labelId of labelIds) {
-          await task.$relatedQuery('labels').relate(Number(labelId));
+          await task.$relatedQuery("labels").relate(Number(labelId));
         }
 
-        req.flash('info', i18next.t('flash.tasks.update.success'));
-        reply.redirect(app.reverse('tasks'));
+        req.flash("info", i18next.t("flash.tasks.update.success"));
+        reply.redirect(app.reverse("tasks"));
       } catch ({ data }) {
-        req.flash('error', i18next.t('flash.tasks.update.error'));
+        req.flash("error", i18next.t("flash.tasks.update.error"));
 
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
-        const header = i18next.t('views.tasks.edit.header');
+        const header = i18next.t("views.tasks.edit.header");
 
-        reply.render('tasks/edit', {
+        reply.render("tasks/edit", {
           task,
           statuses,
           users,
@@ -169,33 +169,33 @@ export default (app) => {
       return reply;
     })
 
-    .delete('/tasks/:id', async (req, reply) => {
+    .delete("/tasks/:id", async (req, reply) => {
       if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('root'));
+        req.flash("error", i18next.t("flash.authError"));
+        reply.redirect(app.reverse("root"));
         return reply;
       }
 
       const task = await app.objection.models.task.query().findById(req.params.id);
 
       if (task.creatorId !== req.user.id) {
-        req.flash('error', i18next.t('flash.tasks.delete.error'));
-        reply.redirect(app.reverse('tasks'));
+        req.flash("error", i18next.t("flash.tasks.delete.error"));
+        reply.redirect(app.reverse("tasks"));
         return reply;
       }
 
       await task.$query().delete();
 
-      req.flash('info', i18next.t('flash.tasks.delete.success'));
-      reply.redirect(app.reverse('tasks'));
+      req.flash("info", i18next.t("flash.tasks.delete.success"));
+      reply.redirect(app.reverse("tasks"));
 
       return reply;
     })
 
-    .post('/tasks', async (req, reply) => {
+    .post("/tasks", async (req, reply) => {
       if (!req.isAuthenticated()) {
-        req.flash('error', i18next.t('flash.authError'));
-        reply.redirect(app.reverse('root'));
+        req.flash("error", i18next.t("flash.authError"));
+        reply.redirect(app.reverse("root"));
         return reply;
       }
 
@@ -218,22 +218,22 @@ export default (app) => {
         const createdTask = await app.objection.models.task.query().insert(validTask);
 
         for (const labelId of labelIds) {
-          await createdTask.$relatedQuery('labels').relate(Number(labelId));
+          await createdTask.$relatedQuery("labels").relate(Number(labelId));
         }
 
-        req.flash('info', i18next.t('flash.tasks.create.success'));
-        reply.redirect(app.reverse('tasks'));
+        req.flash("info", i18next.t("flash.tasks.create.success"));
+        reply.redirect(app.reverse("tasks"));
       } catch (error) {
         const errors = error.data;
 
-        req.flash('error', i18next.t('flash.tasks.create.error'));
+        req.flash("error", i18next.t("flash.tasks.create.error"));
 
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
-        const header = i18next.t('views.tasks.new.header');
+        const header = i18next.t("views.tasks.new.header");
 
-        reply.render('tasks/new', {
+        reply.render("tasks/new", {
           task,
           statuses,
           users,
