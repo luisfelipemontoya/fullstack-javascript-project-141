@@ -9,7 +9,7 @@ block content
       .row.g-3
         .col-md-4
           .input-group
-            label.input-group-text(for='status') State
+            label.input-group-text(for='status')= t('views.tasks.filters.status')
             select.form-select(id='status', name='status')
               option(value='', selected=filters.status === '')
               each status in statuses
@@ -20,7 +20,7 @@ block content
 
         .col-md-4
           .input-group
-            label.input-group-text(for='executor') Executor
+            label.input-group-text(for='executor')= t('views.tasks.filters.executor')
             select.form-select(id='executor', name='executor')
               option(value='', selected=filters.executor === '')
               each user in users
@@ -28,17 +28,17 @@ block content
                   value=user.id
                   selected=String(user.id) === filters.executor
                 )= `${user.firstName} ${user.lastName}`
-                
+
         .col-md-4
           .input-group
-            label.input-group-text(for='label') Label
+            label.input-group-text(for='label')= t('views.tasks.filters.label')
             select.form-select(id='label', name='label')
               option(value='', selected=filters.label === '')
               each label in labels
                 option(
                   value=label.id
                   selected=String(label.id) === filters.label
-                )= label.name    
+                )= label.name
 
       if isAuthenticated()
         .form-check.mt-3
@@ -49,11 +49,11 @@ block content
             value='1'
             checked=filters.isCreatorUser
           )
-          label.form-check-label(for='isCreatorUser') Only my tasks
+          label.form-check-label(for='isCreatorUser')= t('views.tasks.filters.own')
 
 
       .mt-3
-        button.btn.btn-primary(type='submit') Show
+        button.btn.btn-primary(type='submit')= t('views.tasks.filters.show')
 
     table.table
       thead
@@ -63,7 +63,7 @@ block content
           th= t('views.tasks.status')
           th= t('views.tasks.creator')
           th= t('views.tasks.executor')
-          th= t('views.statuses.createdAt') 
+          th= t('views.statuses.createdAt')
           th
 
       tbody
@@ -76,7 +76,7 @@ block content
             td= `${task.creator.firstName} ${task.creator.lastName}`
             td= task.executor ? `${task.executor.firstName} ${task.executor.lastName}` : ''
             td= task.createdAt
-            td 
+            td
               if isAuthenticated()
                 .d-flex.gap-2
                   a.btn.btn-primary.btn-sm(
