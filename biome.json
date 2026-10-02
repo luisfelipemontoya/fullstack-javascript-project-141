@@ -6,7 +6,13 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!dist", "!db", "!server/migrations", "!package-lock.json"]
+    "includes": [
+      "**",
+      "!dist",
+      "!db",
+      "!server/migrations",
+      "!package-lock.json"
+    ]
   },
   "linter": {
     "enabled": true,
@@ -18,15 +24,7 @@
     }
   },
   "formatter": {
-    "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineWidth": 100
-  },
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "single"
-    }
+    "enabled": false
   },
   "assist": {
     "enabled": false
