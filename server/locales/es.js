@@ -38,6 +38,10 @@ export default {
           success: 'Estado creado con éxito',
           error: 'No se pudo crear el estado',
         },
+        delete: {
+          ...en.translation.flash.statuses.delete,
+          success: 'Estado eliminado con éxito',
+        },
       },
       labels: {
         ...en.translation.flash.labels,
@@ -45,6 +49,10 @@ export default {
           ...en.translation.flash.labels.create,
           success: 'Etiqueta creada con éxito',
           error: 'No se pudo crear la etiqueta',
+        },
+        delete: {
+          ...en.translation.flash.labels.delete,
+          success: 'Etiqueta eliminada con éxito',
         },
       },
       session: {
@@ -60,6 +68,7 @@ export default {
         },
       },
       authError: '¡Acceso denegado! Por favor, inicia sesión.',
+      usersUnauthorized: 'No puedes editar o eliminar a otro usuario',
       users: {
         ...en.translation.flash.users,
         create: {
@@ -83,9 +92,11 @@ export default {
 
       tasks: {
         ...en.translation.views.tasks,
+        name: 'Nombre',
         new: {
           ...en.translation.views.tasks.new,
           header: 'Crear tarea',
+          submit: 'Crear',
         },
       },
 
@@ -94,6 +105,7 @@ export default {
         edit: {
           ...en.translation.views.statuses.edit,
           action: 'Actualizar',
+          submit: 'Actualizar',
         },
         delete: {
           ...en.translation.views.statuses.delete,
@@ -111,6 +123,7 @@ export default {
         edit: {
           ...en.translation.views.labels.edit,
           action: 'Actualizar',
+          submit: 'Actualizar',
         },
         delete: {
           ...en.translation.views.labels.delete,

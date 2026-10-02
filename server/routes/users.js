@@ -22,6 +22,7 @@ export default (app) => {
       }
 
       if (req.user.id !== Number(req.params.id)) {
+        req.flash('error', i18next.t('flash.usersUnauthorized'));
         reply.redirect(app.reverse('users'));
         return reply;
       }
@@ -39,6 +40,7 @@ export default (app) => {
       }
 
       if (req.user.id !== Number(req.params.id)) {
+        req.flash('error', i18next.t('flash.usersUnauthorized'));
         reply.redirect(app.reverse('users'));
         return reply;
       }
