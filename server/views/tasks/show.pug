@@ -17,6 +17,11 @@ block content
         strong= `${t('views.tasks.executor')}: `
         = `${task.executor.firstName} ${task.executor.lastName}`
 
+    if task.labels.length
+      p
+        strong= `${t('views.tasks.labels')}: `
+        = task.labels.map((label) => label.name).join(', ')
+
     if task.description
       p= task.description
 

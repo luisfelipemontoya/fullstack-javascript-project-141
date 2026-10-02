@@ -147,7 +147,7 @@ export default (app) => {
         }
 
         req.flash('info', i18next.t('flash.tasks.update.success'));
-        reply.redirect(app.reverse('task', { id: task.id }));
+        reply.redirect(app.reverse('tasks'));
       } catch ({ data }) {
         req.flash('error', i18next.t('flash.tasks.update.error'));
 
