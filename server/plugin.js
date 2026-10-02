@@ -23,7 +23,7 @@ import es from './locales/es.js';
 // @ts-expect-error
 import addRoutes from './routes/index.js';
 import getHelpers from './helpers/index.js';
-import * as knexConfig from '../knexfile.js';
+import { development, test, production } from '../knexfile.js';
 import models from './models/index.js';
 import fastifyMethodOverride from '@hexlet/fastify-method-override';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
@@ -31,6 +31,7 @@ import FormStrategy from './lib/passportStrategies/FormStrategy.js';
 const __dirname = fileURLToPath(path.dirname(import.meta.url));
 
 const mode = process.env.NODE_ENV || 'development';
+const knexConfigs = { development, test, production };
 // const isDevelopment = mode === 'development';
 
 const setUpViews = (app) => {
@@ -114,8 +115,7 @@ const registerPlugins = async (app) => {
 
   await app.register(fastifyMethodOverride);
   await app.register(fastifyObjectionjs, {
-    // biome-ignore lint/performance/noDynamicNamespaceImportAccess: knexfile экспортирует конфиги по именам окружений
-    knexConfig: knexConfig[mode],
+    knexConfig: knexConfigs[mode],
     models,
   });
 };
