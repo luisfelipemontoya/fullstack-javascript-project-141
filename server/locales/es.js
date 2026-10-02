@@ -107,6 +107,7 @@ export default {
 
       tasks: {
         ...en.translation.views.tasks,
+        status: 'Estado',
         name: 'Nombre',
         description: 'Descripción',
         new: {
