@@ -81,7 +81,7 @@ export default {
         statuses: 'Estados',
         labels: 'Etiquetas',
         tasks: 'Tareas',
-        footer: 'Gestor de Tareas',
+        footer: '© Codica.la',
       },
     },
     views: {
@@ -185,7 +185,7 @@ export default {
           description: 'Crea, organiza y sigue tus tareas en un solo lugar.',
           imageAlt: 'Gestor de tareas',
           signUp: 'Comenzar',
-          signIn: 'Iniciar sesión',
+          signIn: 'Acceder',
         },
       },
     },

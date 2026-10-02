@@ -16,11 +16,12 @@ block content
         h1.display-5.fw-bold.lh-1.mb-3= t('views.welcome.index.hello')
         p.lead= t('views.welcome.index.description')
 
-        .d-grid.gap-2.d-md-flex.justify-content-md-start
-          a.btn.btn-primary.btn-lg.px-4.me-md-2(
-            href=route('newUser')
-          )= t('views.welcome.index.signUp')
+        if !isAuthenticated()
+          .d-grid.gap-2.d-md-flex.justify-content-md-start
+            a.btn.btn-primary.btn-lg.px-4.me-md-2(
+              href=route('newUser')
+            )= t('views.welcome.index.signUp')
 
-          a.btn.btn-outline-secondary.btn-lg.px-4(
-            href=route('newSession')
-          )= t('views.welcome.index.signIn')
+            a.btn.btn-outline-secondary.btn-lg.px-4(
+              href=route('newSession')
+            )= t('views.welcome.index.signIn')
